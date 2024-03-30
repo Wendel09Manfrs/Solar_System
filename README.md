@@ -1,11 +1,11 @@
 #Repository link with the original scripts and files: [https://github.com/Wendel09Manfrs/Sistema_Solar/tree/escala_real](https://github.com/Wendel09Manfrs/Sistema_Solar/tree/escala_real)
-# Sistema_Solar
+# Solar_System
 
 Solar System Simulation made in JavaScript, HTML, and CSS.
 
 Follow the steps below to set up and run the project on your local machine:
 
-1. **Instale o Node.js**
+1. **Install Node.js**
 
    If you don't have Node.js installed on your machine, install the latest version of Node.js from the official website: [https://nodejs.org/en](https://nodejs.org/en)
 
