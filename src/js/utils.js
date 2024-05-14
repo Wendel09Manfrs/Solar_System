@@ -9,6 +9,8 @@ import { Easing, Tween, update as tweenUpdate } from '@tweenjs/tween.js'
 
 import { controls } from './script.js'
 
+import { commands } from './gui/gui'
+
 import { sceneManager } from './script.js'
 
 export function gaussianRandom(mean = 0, stdev = 1) {
@@ -146,6 +148,14 @@ export function atualizarCameraParaAstro(astro, camera) {
     case 'freeCamera':
       sceneManager.fly.movementSpeed = controls.velCam
       sceneManager.fly.rollSpeed = controls.velRotCam
+
+      sceneManager.renderer.domElement.addEventListener('mouseenter', () => {
+        sceneManager.fly.enabled = true
+      })
+
+      sceneManager.renderer.domElement.addEventListener('mouseleave', () => {
+        sceneManager.fly.enabled = false
+      })
       sceneManager.fly.update(0.01)
       break
 

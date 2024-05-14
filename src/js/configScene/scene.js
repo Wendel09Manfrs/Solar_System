@@ -68,6 +68,7 @@ export class SceneManager {
       this.fly.autoForward = false;
 
       this.fly.dragToLook = false;
+      this.fly.enabled = false;
     
   
       window.addEventListener('resize', () => {

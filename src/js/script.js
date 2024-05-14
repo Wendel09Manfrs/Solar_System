@@ -513,7 +513,6 @@ function animate() {
     distortionHole(whiteHole)
   }
 
-  //Render distortion scene
   atualizarCameraParaAstro(astros[controls.astroCam], camera)
   renderer.render(
     sceneManager.composition.scene,
