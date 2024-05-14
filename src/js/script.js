@@ -72,10 +72,10 @@ const distSargitarius = (-26000 * 63241.1 * 2.34117) / 5
 const velSun = -1.016846e-6 / Math.sqrt(-distSargitarius, 2)
 
 export const sun = new Star(
-  new Vector3(0, 0, 0),
+  new Vector3(distSargitarius, 0, 0),
   1.0929e-1,
   sunTexture,
-  0,
+  distSargitarius,
   0,
   -1.05068821,
   velSun,
