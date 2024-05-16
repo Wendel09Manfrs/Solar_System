@@ -344,14 +344,14 @@ const whiteHole = new WhiteHole(3.7654, 'White Hole', posHoleWhite)
 
 let galaxy = new Galaxy(
   'Milk Way Galaxy',
-  30000,
+  20000,
   starsTexture,
   AdditiveBlending,
 )
 
 let nebula = new Nebula(null, 3000, AdditiveBlending)
 
-let belt = new Belt('Asteroid Belt', 3000, meteourTexture, NormalBlending)
+let belt = new Belt('Asteroid Belt', 2000, meteourTexture, NormalBlending)
 
 let kuiper = new Kuiper(
   -0.45,
@@ -369,7 +369,7 @@ let kuiper2 = new Kuiper(
   NormalBlending,
 )
 
-let oort = new CloudOort('Oort Cloud', 20000, meteourTexture, NormalBlending)
+let oort = new CloudOort('Oort Cloud', 10000, meteourTexture, NormalBlending)
 
 let astros = {
   whitehole: whiteHole,
