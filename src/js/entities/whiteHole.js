@@ -25,6 +25,7 @@ export class WhiteHole {
     this.createGradient()
     this.createMesh(sceneManager)
     this.createDistortion(sceneManager)
+    this.posLabel = new THREE.Vector3()
   }
 
   createGradient() {
@@ -149,31 +150,24 @@ export class WhiteHole {
   }
 
   labelVisible(camera, checkedL) {
-    const pos = new THREE.Vector3()
-    this.mesh.getWorldPosition(pos)
-    const distance = camera.position.distanceTo(pos)
-
+    this.mesh.getWorldPosition(this.posLabel)
+    const distance =  camera.position.distanceTo(this.posLabel)
+  
     if (checkedL) {
-      if (!this.planet || distance < 10) {
-        if (distance < 10000) {
-          this.showLabel = true
-        } else {
-          this.showLabel = false
+        if(distance<1000){
+        this.showLabel = true;}
+        else{
+         this.showLabel = false; 
         }
-      } else {
-        this.showLabel = false
       }
-    } else {
-      this.showLabel = false
-    }
-
+  
     this.label.visible = this.showLabel
   }
   applyGravitation(grav,camera) {
     const distanceHole = camera.position.distanceTo(this.pos)
 
     if (distanceHole < 1000) {
-      const repulsionForce = Math.max(grav, 1 / distanceHole)
+      const repulsionForce = Math.min(10, grav / distanceHole);
 
       const repulsionDirection = new THREE.Vector3()
         .copy(camera.position)

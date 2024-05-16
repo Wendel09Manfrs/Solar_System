@@ -4,6 +4,7 @@ import {
   AdditiveBlending,
   Clock,
   NormalBlending,
+  Vector2,
 } from 'three'
 
 import { Planet } from './entities/planet'
@@ -22,6 +23,8 @@ import { Kuiper } from './groupsEntities/asteroidsKuiper.js'
 import { CloudOort } from './groupsEntities/cloudOort.js'
 
 import { atualizarCameraParaAstro } from './utils.js'
+
+import { followCamera } from './utils.js'
 
 import sunTexture from '../../assets/textures/sun.jpg'
 
@@ -332,9 +335,9 @@ const titan = new Satellite(
 )
 
 const posHoleWhite = new Vector3(
-  Math.random() * 2 * distSargitarius - 2 * distSargitarius,
-  Math.random() * 2 * distSargitarius - distSargitarius,
-  Math.random() * 1e2,
+  2*distSargitarius,
+  1e5,
+  2*distSargitarius
 )
 
 const whiteHole = new WhiteHole(3.7654, 'White Hole', posHoleWhite)
@@ -434,16 +437,27 @@ function distortionHole(hole) {
 
 let tempo = 0
 
-function animate() {
-  tempo += controls.velocidadeTr
-  sargitariusA.material.uniforms.uTime.value = -tempo * 1e-9
 
+function astrosLabel(posSun){
+  for (let astro in astros) {
+    if (astros[astro].radiusOrbit) {
+      astros[astro].labelVisible(posSun, camera, controls.labVisibility)
+    }else{
+    astros[astro].labelVisible(camera, controls.labVisibility)
+  }
+  }
+}
+
+
+function animate() {
+
+  tempo += controls.velocidadeTr
+  
+  sargitariusA.material.uniforms.uTime.value = -tempo * 1e-9
   whiteHole.material.uniforms.uTime.value = tempo * 1e-9
 
   for (let astro in astros) {
-    astros[astro].labelVisible(camera, controls.labVisibility)
-
-    if (!(astro === 'sargitarius' || astro === 'whitehole')) {
+    if (astros[astro].radiusOrbit) {
       const R = astros[astro].radiusOrbit
       const H = astros[astro].inclinOrbit
 
@@ -465,14 +479,23 @@ function animate() {
     }
   }
 
+
+  if(controls.relativeCam){
+    followCamera(astros[controls.astroCam], camera)}
+
   let posSun = new Vector3()
   sun.mesh.getWorldPosition(posSun)
+
+  astrosLabel(posSun)
+  //sun
+  sun.update(camera, clock, renderer)
+
 
   const distSun = camera.position.distanceTo(posSun)
   const distHole = camera.position.distanceTo(posHoleBlack)
   const distHoleWhite = camera.position.distanceTo(posHoleWhite)
 
-  const distMinima = Math.min(distSun, distHole, distHoleWhite)
+  const distMinima = Math.min(distSun, distHole)
   const normalizedDist = Math.min(0.2, Math.max(5e-3, distMinima / 5e9))
   nebula.element.pointMaterial.uniforms.opacity.value = Math.min(
     normalizedDist,
@@ -520,7 +543,5 @@ function animate() {
   )
   sceneManager.labelRenderer.render(scene, camera)
 
-  //sun
-  sun.update(camera, clock, renderer)
 }
 renderer.setAnimationLoop(animate)

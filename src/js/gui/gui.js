@@ -23,6 +23,7 @@ export class GuiInterface {
       scaleNebulas: 1,
       brightNebula: 0.1,
       intGrav: 0.2,
+      relativeCam: false
     }
 
     this.gruposDeOpcoes = {
@@ -87,20 +88,19 @@ export class GuiInterface {
       .name('Orbital Velocity')
       .step(0.00001)
     astroFolder
-      .add(this.controls, 'velocidadeRo', 0, 1000000)
+      .add(this.controls, 'velocidadeRo', 0, 100000)
       .name('Rotation Velocity')
       .step(0.0000001)
     astroFolder
       .add(this.controls, 'astroCam', this.gruposDeOpcoes)
       .name('Astro')
-
-    astroFolder.add(this.controls, 'mode', this.optionsCam).name('Mode Camera')
-
     astroFolder.add(this.controls, 'orbitLine').name('Orbits Visible')
     astroFolder.add(this.controls, 'labVisibility').name('Labels Visible')
 
+    cameraFolder.add(this.controls, 'mode', this.optionsCam).name('Mode Camera')
+    cameraFolder.add(this.controls, 'relativeCam').name('Relative Motion Camera')
     cameraFolder
-      .add(this.controls, 'velCam', 0, 1000000000)
+      .add(this.controls, 'velCam', 0, 100000000)
       .name('Velocity')
       .step(0.0000001)
     cameraFolder
@@ -140,9 +140,9 @@ export class GuiInterface {
       .step(0.0001)
 
     sizeFolder
-      .add(this.controls, 'intGrav', 0.1, 1)
+      .add(this.controls, 'intGrav', 0, 5)
       .name('Gravity Holes')
-      .step(0.0001)
+      .step(0.001)
 
     this.gui.close()
   }

@@ -13,7 +13,6 @@ import earthSpecularTexture from '../../../assets/textures/earth_specular_map.pn
 import fragmentSun from '../../../shaders/noisesSun/fragment.glsl'
 import vertexSun from '../../../shaders/noisesSun/vertex.glsl'
 
-
 import {scene } from '../script'
 
 export class Entity {
@@ -39,6 +38,8 @@ export class Entity {
       this.velRot = velRot
       this.excentricidade = excentricidade
       this.label = label
+      this.posLabel = new THREE.Vector3(0,this.size*1.1, 0)
+
   
       this.textureLoader = new THREE.TextureLoader(loading.loadingManager)
       this.geo = new THREE.SphereGeometry(this.size, 64, 64)
@@ -87,6 +88,18 @@ export class Entity {
 
       }
       this.mesh = new THREE.Mesh(this.geo, this.mat)
+
+      this.mesh.position.x = this.radiusOrbit
+  
+      this.inclinaRad = (this.inclinRot * Math.PI) / 180.0
+  
+      this.mesh.rotation.x = this.inclinaRad
+
+      this.orbit = createOrbitCircle(this.position,this.radiusOrbit, this.excentricidade)
+      this.orbit.rotation.x = this.inclinOrbit
+
+      this.mesh.add(this.orbit)
+      scene.add(this.orbit)
   
       this.div = document.createElement('div')
       this.div.className = 'label'
@@ -94,57 +107,30 @@ export class Entity {
       this.div.style.backgroundColor = 'transparent'
   
       this.label = new CSS2DObject(this.div)
-      this.label.position.set(0,this.size*1.1, 0)
       this.label.center.set(0, 1)
       this.mesh.add(this.label)
       this.label.layers.set(0)
-  
-      
-  
-      this.mesh.position.x = this.radiusOrbit
-  
-      this.inclinaRad = (this.inclinRot * Math.PI) / 180.0
-  
-      this.mesh.rotation.x = this.inclinaRad
-  
-      this.orbit = createOrbitCircle(this.position,this.radiusOrbit, this.excentricidade)
-  
-      this.orbit.rotation.x = this.inclinOrbit
 
-      this.mesh.add(this.orbit)
-
-      scene.add(this.orbit)
-
-      scene.add(this.mesh)
-  
-      
+      this.label.position.copy(this.posLabel)   
+      scene.add(this.mesh)   
     }
 
 
-    labelVisible(camera, checkedL) {
-
-      const pos = new THREE.Vector3()
-      this.mesh.getWorldPosition(pos)
-      const distance =  camera.position.distanceTo(pos)
-    
-      if (checkedL) {
-        if (!this.planet || distance < 10) {
-          if(distance<10000){
-          this.showLabel = true;}
-          else{
-           this.showLabel = false; 
-          }
-        } else {
-    
-          this.showLabel = false;
-        }
-      } else {
-        this.showLabel = false;
-      }
-      
-    
-      this.label.visible = this.showLabel
+    labelVisible(pos, camera, checkedL) {
+      const posLabel = new THREE.Vector3()
+      this.label.getWorldPosition(posLabel)
+      const distance = camera.position.distanceTo(posLabel)
+      const distCamCenter = camera.position.distanceTo(pos)
+      const distLabelCenter = posLabel.distanceTo(pos)
+  
+      this.show =
+        checkedL &&
+        5 * distCamCenter > distance &&
+        (distance < this.radiusOrbit*100 || distLabelCenter > 1e7)
+  
+      this.label.visible = this.show
     }
+    
 
 
   }

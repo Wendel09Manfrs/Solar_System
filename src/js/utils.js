@@ -101,20 +101,34 @@ export function updateSize(sizeSet, part) {
   part.element.objects.geometry.attributes.sizes.needsUpdate = true
 }
 
-let cameraLookAtTarget
-let astroPosition
+let camLookTarget
+let astroPos
+let astroPosFollow
 
 function init() {
-  cameraLookAtTarget = new Vector3()
-  astroPosition = new Vector3()
+  camLookTarget = new Vector3()
+  astroPos = new Vector3()
+  astroPosFollow = new Vector3()
 }
 init()
+
+
+let prevPos = new Vector3();
+
+export function followCamera(astro, camera) {
+  const astroInfo = astro
+  astroInfo.mesh.getWorldPosition(astroPosFollow)
+  const currentPos = astroPosFollow;
+  const movDelt = currentPos.clone().sub(prevPos);
+  camera.position.add(movDelt);
+  prevPos = currentPos.clone();
+}
 
 export function atualizarCameraParaAstro(astro, camera) {
   sceneManager.orbitC.enabled = false
   const astroInfo = astro
-  astroInfo.mesh.getWorldPosition(astroPosition)
-  const { x, y, z } = astroPosition
+  astroInfo.mesh.getWorldPosition(astroPos)
+  const { x, y, z } = astroPos
   const target = {
     x: x - astroInfo.size * 2,
     y: y + astroInfo.size * 3,
@@ -130,17 +144,17 @@ export function atualizarCameraParaAstro(astro, camera) {
         .easing(Easing.Cubic.Out)
         .start()
 
-      new Tween(cameraLookAtTarget)
-        .to(astroPosition)
+      new Tween(camLookTarget)
+        .to(astroPos)
         .easing(Easing.Cubic.Out)
         .duration(100)
-        .onUpdate(() => camera.lookAt(cameraLookAtTarget))
+        .onUpdate(() => camera.lookAt(camLookTarget))
         .start()
       break
 
     case 'orbit':
       sceneManager.orbitC.enabled = true
-      sceneManager.orbitC.target.copy(astroPosition)
+      sceneManager.orbitC.target.copy(astroPos)
       sceneManager.orbitC.minDistance = astroInfo.size * 2.5
       sceneManager.orbitC.update()
       break
@@ -162,5 +176,8 @@ export function atualizarCameraParaAstro(astro, camera) {
     default:
       break
   }
-  cameraLookAtTarget.set(x, y, z)
+  camLookTarget.set(x, y, z)
 }
+
+
+

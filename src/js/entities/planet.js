@@ -3,6 +3,7 @@ import { Entity } from './entity.js'
 
 import { sun } from '../script.js'
 
+
 export class Planet extends Entity {
     constructor(
       position,
@@ -29,7 +30,10 @@ export class Planet extends Entity {
       }
       sun.mesh.add(this.mesh)
       sun.mesh.add(this.orbit)
+   
     }
+
+   
   }
 
   function createRings(innerRadius, outerRadius, texture) {

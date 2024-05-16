@@ -21,4 +21,5 @@ export class Satellite extends Entity {
       this.planet.add(this.mesh)
       this.planet.add(this.orbit)
     }
+
   }

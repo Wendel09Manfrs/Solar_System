@@ -26,6 +26,7 @@ export class BlackHole {
     this.createGradient();
     this.createMesh(sceneManager);
     this.createDistortion(sceneManager);
+    this.posLabel = new THREE.Vector3()
   }
 
   createGradient() {
@@ -139,26 +140,16 @@ export class BlackHole {
 
 
   labelVisible(camera, checkedL) {
-
-    const pos = new THREE.Vector3()
-    this.mesh.getWorldPosition(pos)
-    const distance =  camera.position.distanceTo(pos)
+    this.mesh.getWorldPosition(this.posLabel)
+    const distance =  camera.position.distanceTo(this.posLabel)
   
     if (checkedL) {
-      if (!this.planet || distance < 10) {
-        if(distance<10000){
+        if(distance<1000){
         this.showLabel = true;}
         else{
          this.showLabel = false; 
         }
-      } else {
-  
-        this.showLabel = false;
       }
-    } else {
-      this.showLabel = false;
-    }
-    
   
     this.label.visible = this.showLabel
   }
@@ -167,7 +158,7 @@ export class BlackHole {
     const distanceHole = camera.position.distanceTo(this.pos);
 
     if(distanceHole<1000){
-    const attractionForce = Math.max(grav, 1 / distanceHole);
+    const attractionForce = Math.min(10, grav / distanceHole);
   
     const attractionDirection = new THREE.Vector3().copy(this.pos).sub(camera.position).normalize();
     camera.position.add(attractionDirection.multiplyScalar(attractionForce));

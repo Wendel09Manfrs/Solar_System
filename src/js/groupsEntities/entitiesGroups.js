@@ -94,7 +94,6 @@ export class Object {
     this.div.style.backgroundColor = 'transparent'
 
     this.label = new CSS2DObject(this.div)
-
     this.label.center.set(0, 1)
     this.objects.add(this.label)
     this.label.layers.set(0)
