@@ -1,10 +1,8 @@
-import * as THREE from 'three'
+import {Vector3, BufferGeometry, Float32BufferAttribute, Points,ShaderMaterial, TextureLoader} from 'three'
 
 import { loading } from '../entities/entity.js'
 
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-
-import { commands } from '../gui/gui.js'
 
 import vertexNebula from '../../../shaders/nebula/vertex.glsl'
 import fragmentNebula from '../../../shaders/nebula/fragment.glsl'
@@ -13,6 +11,8 @@ import vertexAsteroids from '../../../shaders/asteroids/vertex.glsl'
 import fragmentAsteroids from '../../../shaders/asteroids/fragment.glsl'
 
 import { scene } from '../script.js'
+
+
 
 export class Object {
   constructor(name, distCam, posLabel, attributes, blending, texture) {
@@ -24,11 +24,11 @@ export class Object {
     this.texture = texture
     this.blending = blending
 
-    this.objectGeometry = new THREE.BufferGeometry()
+    this.objectGeometry = new BufferGeometry()
 
     this.objectGeometry.setAttribute(
       'color',
-      new THREE.Float32BufferAttribute(
+      new Float32BufferAttribute(
         this.attributes.colors.flatMap((c) => [c.r, c.g, c.b]),
         3,
       ),
@@ -36,41 +36,41 @@ export class Object {
 
     this.objectGeometry.setAttribute(
       'shift',
-      new THREE.Float32BufferAttribute(this.attributes.shift, 4),
+      new Float32BufferAttribute(this.attributes.shift, 4),
     )
 
     this.objectGeometry.setAttribute(
       'sizes',
-      new THREE.Float32BufferAttribute(this.attributes.sizes, 1),
+      new Float32BufferAttribute(this.attributes.sizes, 1),
     )
 
     this.objectGeometry.setAttribute(
       'position',
-      new THREE.Float32BufferAttribute(
+      new Float32BufferAttribute(
         this.attributes.coord.flatMap((v) => [v.x, v.y, v.z]),
         3,
       ),
     )
 
-    this.particleTexture = new THREE.TextureLoader(loading.loadingManager).load(
+    this.particleTexture = new TextureLoader(loading.loadingManager).load(
       this.texture,
     )
 
     if (!texture) {
-      this.pointMaterial = new THREE.ShaderMaterial({
+      this.pointMaterial = new ShaderMaterial({
         uniforms: {
           opacity: { value: 1.0 },
         },
         vertexShader: vertexNebula,
         fragmentShader: fragmentNebula,
 
-        transparent: false,
-        blending: THREE.AdditiveBlending,
+        transparent: true,
+        blending: this.blending,
         depthWrite: false,
-        depthTest: true,
+
       })
     } else {
-      this.pointMaterial = new THREE.ShaderMaterial({
+      this.pointMaterial = new ShaderMaterial({
         uniforms: {
           particleTexture: { value: this.particleTexture },
           opacity: { value: 1.0 },
@@ -79,14 +79,14 @@ export class Object {
         vertexShader: vertexAsteroids,
         fragmentShader: fragmentAsteroids,
 
-        transparent: false,
-        blending: blending,
-        depthWrite: false,
-        depthTest: true,
+        transparent: true,
+        blending: this.blending,
+        depthWrite: true,
+        depthTest: false,
       })
     }
 
-    this.objects = new THREE.Points(this.objectGeometry, this.pointMaterial)
+    this.objects = new Points(this.objectGeometry, this.pointMaterial)
 
     this.div = document.createElement('div')
     this.div.className = 'label'
@@ -102,8 +102,8 @@ export class Object {
     this.scene.add(this.objects)
   }
 
-  labelVisible(pos, camera, checkedL) {
-    const posLabel = new THREE.Vector3()
+  setLabelVisible(pos, camera, checkedL) {
+    const posLabel = new Vector3()
     this.label.getWorldPosition(posLabel)
     const distance = camera.position.distanceTo(posLabel)
     const distCamCenter = camera.position.distanceTo(pos)
@@ -123,6 +123,6 @@ export function pushShift(shift, amplitude) {
     Math.random() * Math.PI * 2,
     Math.random() * Math.PI * 2,
     (Math.random() * 0.9 + 0.1) * Math.PI,
-    Math.random() * amplitude - amplitude, // Aumentando a magnitude do deslocamento
+    Math.random() * amplitude - amplitude
   )
 }

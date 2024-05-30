@@ -1,25 +1,28 @@
 import { Entity } from './entity.js'
 
+import { Vector3} from 'three'
+
+
 export class Satellite extends Entity {
     constructor(
-      position,
       size,
       texture,
-      radiusOrbit,
+      orbitRadius,
       inclinRot,
-      inclinOrbit,
-      velTrans,
-      velRot,
-      excentricidade,
+      orbitInclin,
+      speedTrans,
+      speedRot,
+      eccentricity,
       label,
-      planet,
+      planet
     ) {
-  
-      super(position, size, texture, radiusOrbit, inclinRot, inclinOrbit, velTrans, velRot, excentricidade, label);
-  
+      let position = new Vector3()
+      super(position, size, texture, orbitRadius, inclinRot, orbitInclin, speedTrans, speedRot, eccentricity, label);
       this.planet = planet
-      this.planet.add(this.mesh)
-      this.planet.add(this.orbit)
+    }
+    centerOrbit(){
+      this.position = this.planet.mesh.position
+      this.orbit.position.copy(this.planet.mesh.position)
     }
 
   }

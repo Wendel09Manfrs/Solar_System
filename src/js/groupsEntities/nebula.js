@@ -26,9 +26,9 @@ export class Nebula {
     this.qtd = qtd
     this.blending = blending
     this.parameters = this.generateAttr(this.qtd)
-    this.pos = new Vector3(-this.distancia, 0, 0)
-    this.velMax = 7e-7
-    this.velMin = 6e-7
+    this.pos = new Vector3(0, 0, 0)
+    this.maxSpeed = -7.7e-9
+    this.minSpeed = -3.3e-9
 
     this.element = new Object(
       this.name,
@@ -47,22 +47,22 @@ export class Nebula {
     for (let i = 0; i < numStars / 20; i++) {
       const x = gaussianRandom(0, CORE_X_DIST * 1.2)
       const y = gaussianRandom(0, CORE_Y_DIST * 1.2)
-      const z = gaussianRandom(0, GALAXY_THICKNESS)
+      const z = gaussianRandom(0, GALAXY_THICKNESS*1.4)
 
-      let xyz = new Vector3(y - this.distancia, z, x)
+      let xyz = new Vector3(y, z, x)
 
       let aleat = colorSizeAleat(attributs)
       colors.push(new Color(0xfffab8))
-      sizes.push(aleat.size)
+      sizes.push(aleat.size * 1.2)
       coord.push(xyz)
     }
 
     for (let i = 0; i < numStars / 20; i++) {
       const x1 = gaussianRandom(0, OUTER_CORE_X_DIST * 1.5)
       const y1 = gaussianRandom(0, OUTER_CORE_Y_DIST * 1.5)
-      const z1 = gaussianRandom(0, GALAXY_THICKNESS)
+      const z1 = gaussianRandom(0, GALAXY_THICKNESS*1.4)
 
-      let xyz = new Vector3(x1 - this.distancia, z1, y1)
+      let xyz = new Vector3(x1, z1, y1)
 
       let aleat = colorSizeAleat(attributs)
       colors.push(new Color(0xfffab8))
@@ -72,10 +72,10 @@ export class Nebula {
     }
 
     for (let j = 0; j < ARMS; j++) {
-      for (let i = 0; i < numStars / 4; i++) {
+      for (let i = 0; i < numStars / 2; i++) {
         const x2 = gaussianRandom(ARM_X_MEAN, ARM_X_DIST)
         const y2 = gaussianRandom(ARM_Y_MEAN, ARM_Y_DIST)
-        const z2 = gaussianRandom(0, GALAXY_THICKNESS)
+        const z2 = gaussianRandom(0, GALAXY_THICKNESS*1.4)
 
         let xyz = spiral(x2, y2, z2, (j * 2 * Math.PI) / ARMS)
 
@@ -91,7 +91,7 @@ export class Nebula {
   labelPosition() {
     const position = new Vector3(
       -this.distancia,
-      GALAXY_THICKNESS,
+      GALAXY_THICKNESS*1.2,
       this.distancia,
     )
 

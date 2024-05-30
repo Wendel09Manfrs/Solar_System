@@ -3,8 +3,8 @@ import {
   Vector3,
   AdditiveBlending,
   Clock,
-  NormalBlending,
-  Vector2,
+  AlwaysDepth,
+  Color
 } from 'three'
 
 import { Planet } from './entities/planet'
@@ -22,11 +22,7 @@ import { Belt } from './groupsEntities/asteroidsBelt.js'
 import { Kuiper } from './groupsEntities/asteroidsKuiper.js'
 import { CloudOort } from './groupsEntities/cloudOort.js'
 
-import { atualizarCameraParaAstro } from './utils.js'
-
-import { followCamera } from './utils.js'
-
-import sunTexture from '../../assets/textures/sun.jpg'
+import { updateCamFor } from './utils.js'
 
 import mercuryTexture from '../../assets/textures/mercuryReal.jpg'
 import venusTexture from '../../assets/textures/venusReal.jpg'
@@ -57,7 +53,7 @@ import titanTexture from '../../assets/textures/titanSaturn.jpg'
 import starsTexture from '../../assets/textures/star.png'
 
 import { SceneManager } from './configScene/scene.js'
-import { curva, anima } from './utils.js'
+import {animateParts, findClosestBody, orbit, calculateOpacity} from './utils.js'
 
 export const sceneManager = new SceneManager()
 sceneManager.init()
@@ -72,129 +68,144 @@ camera.add(sceneManager.noises.plane.mesh)
 
 const distSargitarius = (-26000 * 63241.1 * 2.34117) / 5
 
-const velSun = -1.016846e-6 / Math.sqrt(-distSargitarius, 2)
+const posHoleBlack = new Vector3(0, 0, 0)
+const posHoleWhite = new Vector3(1.2 * distSargitarius, 1e5, distSargitarius)
+
+const sargitariusA = new BlackHole(3.7654, 'Sargitarius A*', posHoleBlack, posHoleWhite)
+const whiteHole = new WhiteHole(3.7654, 'White Hole', posHoleWhite)
+
+const posSun = new Vector3()
+const velSun = -9.016846e-11
 
 export const sun = new Star(
-  new Vector3(distSargitarius, 0, 0),
+  new Vector3(0, 0, 0),
   1.0929e-1,
-  sunTexture,
   distSargitarius,
   0,
   -1.05068821,
   velSun,
-  2.916846e-6,
-  0,
-  'Sun',
+  2.916846e-1,
+    0,
+  'Sun'
 )
-const posHoleBlack = new Vector3(distSargitarius, 0, 0)
-const sargitariusA = new BlackHole(3.7654, 'Sargitarius A*', posHoleBlack)
-
-let posInitial = new Vector3(0, 0, 0)
 const mercury = new Planet(
-  posInitial,
   3.83e-4,
   mercuryTexture,
   9.09058,
   0.034,
-  0.05899213,
-  8.264e-7,
-  1.240013441242619e-6,
+  0.05899,
+  8.264e-2,
+  1.24e-1,
   0.2056,
   'Mercury',
+  new Color(0xddadad),
+  new Color(0x808080),
 )
 
+
+
+
 const venus = new Planet(
-  posInitial,
   9.5e-4,
   venusTexture,
   16.986,
   177.4,
   0.067369,
-  3.232e-7,
-  2.99259e-7,
+  3.232e-2,
+  2.99259e-2,
   0.0068,
   'Venus',
+  new Color(0xe6e4a8),
+  new Color(0xf5deb3),
 )
 
+venus.mesh.add(venus.meshAtm)
+
 const earth = new Planet(
-  posInitial,
   1e-3,
   earthTexture,
   23.47116,
   23.44,
-  0.12487831,
-  1.992e-7,
-  7.29211505392569e-5,
+  0.12487,
+  1.992e-2,
+  7.2921,
   0.0167,
   'Earth',
+  new Color(0x67ceeb),
+  new Color(0x2faefb),
 )
 const moon = new Satellite(
-  posInitial,
   2.73e-4,
   moonTexture,
   6.0335e-2,
   6.687,
   0.0898,
-  2.661699538941653e-6,
-  2.661699538941653e-6,
+  2.6617e-1,
+  2.6617e-1,
   0.0549,
   'moon',
-  earth.mesh,
+  earth
 )
 
 const mars = new Planet(
-  posInitial,
   5.32e-4,
   marsTexture,
   35.743,
   25.19,
   0.0986111,
-  1.059e-7,
-  7.088218127178316e-5,
+  1.059e-2,
+  7.0882,
   0.0934,
   'Mars',
+  new Color(0xffa07a),
+  new Color(0xe9967a),
 )
 const jupiter = new Planet(
-  posInitial,
   1.12e-2,
   jupiterTexture,
   122.153,
   3.12,
   0.1062906,
-  1.673e-8,
-  1.773408215404907e-4,
+  1.673e-3,
+  1.7734e1,
   0.0484,
   'Jupiter',
+  new Color(0x00b68c),
+  new Color(0xd2b48c),
 )
 
 const saturn = new Planet(
-  posInitial,
   9.45e-3,
   saturnTexture,
   224.107,
   26.73,
   0.09616764,
-  9.294e-9,
-  1.636246173744684e-4,
+  9.294e-4,
+  1.63624e1,
   0.0541,
   'Saturn',
+  new Color(0xf5deb3),
+  new Color(0xd2b48c),
+
   {
-    innerRadius: 1.288e-2,
-    outerRadius: 2.1e-2,
+    innerRadius: 1.17e-2,
+    outerRadius: 2.15e-2,
     texture: ringSaturnTexture,
   },
 )
 const uranus = new Planet(
-  posInitial,
   3.98e-3,
   uranusTexture,
   450.523,
   97.77,
   0.1130973,
-  2.37e-9,
-  -1.041365902144588e-4,
+  2.37e-4,
+  1.041e1,
   0.0472,
   'Uranus',
+  new Color(0xafeeee),
+  new Color(0x40e0d0),
+
   {
     innerRadius: 5.96e-3,
     outerRadius: 7.29e-3,
@@ -202,163 +213,158 @@ const uranus = new Planet(
   },
 )
 
+
+
+
+
 const neptune = new Planet(
-  posInitial,
   3.85e-3,
   neptuneTexture,
   706.657,
   28.32,
   0.1122247,
-  1.208e-9,
-  1.083382527619075e-4,
+  1.208e-4,
+  1.08e1,
   0.0086,
   'Neptune',
+  new Color(0x4169e1),
+  new Color(0x005fff),
 )
 const pluto = new Planet(
-  posInitial,
   1.9e-4,
   plutoTexture,
   927.7436,
   119.61,
   0.29917997705,
-  8.01e-10,
-  -1.295641039282477e-5,
+  8.01e-5,
+  1.2956,
   0.2488,
   'Pluto',
+  new Color(0x00eeff),
+  new Color(0xfae2ff),
 )
 
 const europa = new Satellite(
-  posInitial,
   2.45e-4,
   europaTexture,
   1.0538e-1,
   0.0174533,
   0.00820304748,
-  2.053433773e-5,
-  2.053715175e-5,
+  2.053433773,
+  2.053715175,
   0.0094,
   'Europa',
-  jupiter.mesh,
+  jupiter,
 )
 
 const callisto = new Satellite(
-  posInitial,
   3.78e-4,
   callistoTexture,
   2.9595e-1,
   0,
   0.0033510322,
-  4.369409e-6,
-  4.369445e-6,
+  4.369409e-1,
+  4.369445e-1,
   0.0074,
   'Callisto',
-  jupiter.mesh,
+  jupiter,
 )
 const ganymede = new Satellite(
-  posInitial,
   4.13e-4,
   ganymedeTexture,
   1.6848e-1,
   0.005759587,
   0.00349066,
-  1.019227339e-5,
-  1.019227339e-5,
+  1.019227339,
+  1.019227339,
   0.0013,
   'Ganymede',
-  jupiter.mesh,
+  jupiter,
 )
 const iO = new Satellite(
-  posInitial,
   2.86e-4,
   iOTexture,
   6.623e-2,
   0,
   0.0008726646,
-  4.1218468e-5,
-  4.12923544e-5,
+  4.12,
+  4.129,
   0.004,
   'iO',
-  jupiter.mesh,
+  jupiter,
 )
 
 const dione = new Satellite(
-  posInitial,
   8.821e-5,
   dioneTexture,
   5.931e-2,
   0,
   0.00033161256,
-  2.6643556e-5,
-  2.66446227e-5,
+  2.664,
+  2.664,
   0.022,
   'Dione',
-  saturn.mesh,
+  saturn,
 )
 const iapetus = new Satellite(
-  posInitial,
   1.15e-4,
   iapetusTexture,
   5.5943e-1,
   0,
   0.27000244,
-  9.19317e-7,
-  9.195605e-7,
+  9.193e-2,
+  9.1956e-2,
   0.0281,
   'Iapetus',
-  saturn.mesh,
+  saturn,
 )
 const rhea = new Satellite(
-  posInitial,
   1.2e-4,
   rheaTexture,
   8.286e-2,
   0,
   0.0060213859,
-  1.6139382e-5,
-  1.6139940997e-5,
+  1.6139,
+  1.614,
   0.002583,
   'Rhea',
-  saturn.mesh,
+  saturn,
 )
 const titan = new Satellite(
-  posInitial,
   4.06e-4,
   titanTexture,
   1.9205e-1,
   0,
   0.0060737,
-  4.967795e-6,
-  4.967795e-6,
+  4.9678e-1,
+  4.9678e-1,
   0.0288,
   'Titan',
-  saturn.mesh,
+  saturn,
 )
 
-const posHoleWhite = new Vector3(
-  2*distSargitarius,
-  1e5,
-  2*distSargitarius
-)
 
-const whiteHole = new WhiteHole(3.7654, 'White Hole', posHoleWhite)
+
 
 let galaxy = new Galaxy(
   'Milk Way Galaxy',
-  20000,
+  15000,
   starsTexture,
   AdditiveBlending,
 )
+let galaxyCenter = new Vector3(0, 0, 0);
+let galaxyNormal = new Vector3(0, Math.cos(-1.05068821), Math.sin(-1.05068821)).normalize();
 
-let nebula = new Nebula(null, 3000, AdditiveBlending)
+let nebula = new Nebula(null, 2000, AdditiveBlending)
 
-let belt = new Belt('Asteroid Belt', 2000, meteourTexture, NormalBlending)
+let belt = new Belt('Asteroid Belt', 2000, meteourTexture, AlwaysDepth)
 
 let kuiper = new Kuiper(
   -0.45,
   'Kuiper Belt',
   2000,
   meteourTexture,
-  NormalBlending,
+  AlwaysDepth,
 )
 
 let kuiper2 = new Kuiper(
@@ -366,12 +372,12 @@ let kuiper2 = new Kuiper(
   'Kuiper Belt',
   2000,
   meteourTexture,
-  NormalBlending,
+  AlwaysDepth,
 )
 
-let oort = new CloudOort('Oort Cloud', 10000, meteourTexture, NormalBlending)
+let oort = new CloudOort('Oort Cloud', 15000, meteourTexture, AlwaysDepth)
 
-let astros = {
+const bodies = {
   whitehole: whiteHole,
   sargitarius: sargitariusA,
   sun: sun,
@@ -403,9 +409,11 @@ export const particles = {
   galaxy: galaxy,
 }
 
+
+
 var clock = new Clock()
 
-function distortionHole(hole) {
+function applyDistortion(hole) {
   hole.distortion.hole.mesh.lookAt(camera.position)
   const screenPosition = new Vector3(hole.pos.x, hole.pos.y, hole.pos.z)
   screenPosition.project(camera)
@@ -435,113 +443,127 @@ function distortionHole(hole) {
   renderer.setRenderTarget(null)
 }
 
-let tempo = 0
+let time = 0
 
-
-function astrosLabel(posSun){
-  for (let astro in astros) {
-    if (astros[astro].radiusOrbit) {
-      astros[astro].labelVisible(posSun, camera, controls.labVisibility)
-    }else{
-    astros[astro].labelVisible(camera, controls.labVisibility)
-  }
+function bodiesLabel() {
+  for (let key in bodies) {
+    bodies[key].setLabelVisible(camera, controls.labVisible)
   }
 }
 
-
-function animate() {
-
-  tempo += controls.velocidadeTr
-  
-  sargitariusA.material.uniforms.uTime.value = -tempo * 1e-9
-  whiteHole.material.uniforms.uTime.value = tempo * 1e-9
-
-  for (let astro in astros) {
-    if (astros[astro].radiusOrbit) {
-      const R = astros[astro].radiusOrbit
-      const H = astros[astro].inclinOrbit
-
-      const posicao = curva(
-        R,
-        H,
-        astros[astro].excentricidade,
-        tempo,
-        astros[astro].velTrans,
-        astros[astro].position.x,
-        astros[astro].position.y,
-        astros[astro].position.z,
-      )
-      astros[astro].mesh.position.set(posicao.x, posicao.y, posicao.z)
-
-      astros[astro].mesh.rotateY(controls.velocidadeRo * astros[astro].velRot)
-
-      astros[astro].orbit.visible = controls.orbitLine
-    }
+function updateBody(body, time, speed, controls, camera) {
+  if (body.orbitRadius) {
+    updateOrbitingBody(body, time, controls);
+  } else {
+    updateNonOrbitingBody(body, speed, controls, camera);
   }
+}
+
+function updateOrbitingBody(body, time, controls) {
+  const R = body.orbitRadius;
+  const H = body.orbitInclin;
+  const speedObj = time *body.speedTrans
 
 
-  if(controls.relativeCam){
-    followCamera(astros[controls.astroCam], camera)}
+  body.centerOrbit()
+  const posCurrent = orbit(
+    R,
+    H,
+    body.eccentricity,
+    speedObj,
+    body.position.x,
+    body.position.y,
+    body.position.z,
+    body.ia,
+    body.ifreq,
+    body.ra,
+    body.rfreq
+  );
+  body.mesh.position.set(posCurrent.x, posCurrent.y, posCurrent.z);
 
-  let posSun = new Vector3()
-  sun.mesh.getWorldPosition(posSun)
-
-  astrosLabel(posSun)
-  //sun
-  sun.update(camera, clock, renderer)
+  body.mesh.rotation.y = time * body.speedRot;
+  body.orbit.visible = controls.orbitLine;
+}
 
 
-  const distSun = camera.position.distanceTo(posSun)
-  const distHole = camera.position.distanceTo(posHoleBlack)
-  const distHoleWhite = camera.position.distanceTo(posHoleWhite)
+function updateNonOrbitingBody(body, speed, controls, camera) {
+  let speedLim = Math.max(4e6, Math.min(speed, 2e8))
+  body.material.uniforms.uTime.value += speedLim* body.speedDisk;
+  body.applyGrav(controls.gravity, camera);
+}
 
-  const distMinima = Math.min(distSun, distHole)
-  const normalizedDist = Math.min(0.2, Math.max(5e-3, distMinima / 5e9))
-  nebula.element.pointMaterial.uniforms.opacity.value = Math.min(
-    normalizedDist,
-    controls.brightNebula,
-  )
-
-  sargitariusA.applyGravitation(controls.intGrav, camera, posHoleWhite)
-  whiteHole.applyGravitation(controls.intGrav,camera)
-
-  let t = clock.getElapsedTime() * controls.velocidadeTr
-
-  for (let group in particles) {
-    if (particles.hasOwnProperty(group)) {
-      particles[group].element.labelVisible(
-        posSun,
-        camera,
-        controls.labVisibility,
-      )
-
-      anima(
-        particles[group].pos,
-        particles[group],
-        controls.velocidadeTr,
-        particles[group].velMax,
-        particles[group].velMin,
-      )
-      particles[group].element.pointMaterial.uniforms.time.value =
-        t * Math.PI * particles[group].velIncli
+function updateParticles(particles, speed, posSun, camera, controls, distSun) {
+  Object.keys(particles).forEach(group => {
+    const particleGroup = particles[group];
+    particleGroup.element.setLabelVisible(posSun, camera, controls.labVisible);
+    animateParts(
+      particleGroup.pos,
+      particleGroup,
+      speed,
+      particleGroup.maxSpeed,
+      particleGroup.minSpeed
+    );
+    particleGroup.element.pointMaterial.uniforms.time.value += speed * Math.PI * particleGroup.inclSpeed;
+    if (!particleGroup.starTexture) {
+      particleGroup.element.pointMaterial.uniforms.opacity.value = Math.max(0.1, Math.min(1, distSun / particleGroup.R));
     }
-  }
-  anima(nebula.pos, nebula, controls.velocidadeTr, 7e-7, 6e-7)
+  });
+}
 
-  camera.updateWorldMatrix()
+function updateNebula(nebula, brightness) {
+  nebula.element.pointMaterial.uniforms.opacity.value = calculateOpacity(camera, galaxyCenter, galaxyNormal)*brightness;
+}
+
+function updateCameraAndDistortion(controls, camera, posHoleBlack, posHoleWhite) {
+  const distHole = camera.position.distanceTo(posHoleBlack);
+  const distHoleWhite = camera.position.distanceTo(posHoleWhite);
+  updateNebula(nebula, controls.nebulaBrightness);
+
+  commands.followCam(bodies[controls.camTarget], camera);
 
   if (distHoleWhite >= distHole) {
-    distortionHole(sargitariusA)
+    applyDistortion(sargitariusA);
   } else {
-    distortionHole(whiteHole)
+    applyDistortion(whiteHole);
+  }
+}
+
+
+let speed
+function animate() {
+
+  speed = commands.timeUnits[controls.timeUnit]
+   
+  time += clock.getDelta() *speed;
+  sun.mesh.getWorldPosition(posSun);
+
+  Object.keys(bodies).forEach(key => {
+    updateBody(bodies[key], time, speed, controls, camera);
+  });
+
+  sun.update(clock, renderer);
+
+  let distSun = camera.position.distanceTo(posSun)
+
+  updateParticles(particles, speed, posSun, camera, controls,distSun );
+
+  animateParts(nebula.pos, nebula, speed, nebula.maxSpeed, nebula.minSpeed);
+
+  camera.updateWorldMatrix();
+  updateCameraAndDistortion(controls, camera, posHoleBlack, posHoleWhite);
+
+  bodiesLabel()
+
+  const closerObj = findClosestBody(camera, bodies);
+  updateCamFor(bodies[controls.camTarget], camera, closerObj.minDist);
+
+  if (bodies[closerObj.labCloser].orbitRadius) {
+    bodies[closerObj.labCloser].detectCollision(camera);
   }
 
-  atualizarCameraParaAstro(astros[controls.astroCam], camera)
-  renderer.render(
-    sceneManager.composition.scene,
-    sceneManager.composition.camera,
-  )
-  sceneManager.labelRenderer.render(scene, camera)
 
+  renderer.render(sceneManager.composition.scene, sceneManager.composition.camera);
+  sceneManager.labelRenderer.render(scene, camera);
 }
-renderer.setAnimationLoop(animate)
+
+renderer.setAnimationLoop(animate);

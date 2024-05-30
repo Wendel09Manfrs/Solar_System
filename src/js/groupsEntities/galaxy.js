@@ -23,20 +23,19 @@ export class Galaxy {
   constructor(name, qtd, starTexture, blending) {
     this.distancia = (26000 * 63241.1 * 2.34117) / 5
     this.name = name
-    this.distCam = this.distancia
     this.qtd = qtd
     this.starTexture = starTexture
     this.blending = blending
-    this.pos = new Vector3(-this.distancia,0,0)
-    this.velMax = 7e-7
-    this.velMin = 6e-7
-    this.velIncli = 1e-10
+    this.pos = new Vector3(0,0,0)
+    this.maxSpeed = -4e-8
+    this.minSpeed = -1e-8
+    this.inclSpeed = 1e-13
 
     this.parameters = this.generateAttr(this.qtd)
 
     this.element = new Object(
       this.name,
-      this.distCam,
+      this.distancia,
       this.labelPosition(),
       this.parameters,
       this.blending,
@@ -59,13 +58,13 @@ export class Galaxy {
       const y = gaussianRandom(0, CORE_Y_DIST)
       const z = gaussianRandom(0, GALAXY_THICKNESS)
 
-      let xyz = new Vector3(y - this.distancia, z, x)
+      let xyz = new Vector3(y, z, x)
 
       let aleat = colorSizeAleat(attributs)
       colors.push(aleat.color)
       sizes.push(aleat.size)
       coord.push(xyz)
-      pushShift(shift, 220000000)
+      pushShift(shift, 160000000)
     }
 
     for (let i = 0; i < numStars / 6; i++) {
@@ -73,11 +72,11 @@ export class Galaxy {
       const y1 = gaussianRandom(0, OUTER_CORE_Y_DIST)
       const z1 = gaussianRandom(0, GALAXY_THICKNESS)
 
-      let xyz = new Vector3(x1 - this.distancia, z1, y1)
+      let xyz = new Vector3(x1, z1, y1)
 
       let aleat = colorSizeAleat(attributs)
       colors.push(aleat.color)
-      sizes.push(aleat.size * 2)
+      sizes.push(aleat.size * 1.3)
       coord.push(xyz)
       pushShift(shift, 100000000)
     }
@@ -107,7 +106,7 @@ export class Galaxy {
   }
   labelPosition() {
     const position = new Vector3(
-      -this.distancia,
+      0,
       GALAXY_THICKNESS,
       this.distancia,
     )

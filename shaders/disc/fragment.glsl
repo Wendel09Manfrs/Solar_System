@@ -16,10 +16,10 @@ float remap(float v, float inMin, float inMax, float outMin, float outMax) {
 
 
 void main() {
-  float noise1 = texture(uNoisesTexture, vUv - uTime * 0.1).r;
-  float noise2 = texture(uNoisesTexture, vUv - uTime * 0.08).g;
-  float noise3 = texture(uNoisesTexture, vUv - uTime * 0.06).b;
-  float noise4 = texture(uNoisesTexture, vUv - uTime * 0.04).a;
+  float noise1 = texture(uNoisesTexture, vUv - uTime * 1.0).r;
+  float noise2 = texture(uNoisesTexture, vUv - uTime * 0.8).g;
+  float noise3 = texture(uNoisesTexture, vUv - uTime * 0.6).b;
+  float noise4 = texture(uNoisesTexture, vUv - uTime * 0.4).a;
   vec4 noiseVector = vec4(noise1, noise2, noise3, noise4);
   float noiseLength = length(noiseVector);
 

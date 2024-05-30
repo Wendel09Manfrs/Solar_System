@@ -12,10 +12,8 @@ import { pushShift } from '../groupsEntities/entitiesGroups.js'
 import { Object } from './entitiesGroups.js'
 import { randomNormal } from './asteroidsBelt.js'
 
-
 import { sun } from '../script.js'
 
-import {commands} from '../gui/gui.js'
 
 export class Kuiper {
   constructor(circle, name, qtd, meteourTexture, blending) {
@@ -26,11 +24,11 @@ export class Kuiper {
     this.meteourTexture = meteourTexture
     this.blending = blending
     this.parameters = this.generateAttr(this.qtd)
-    this.controls = 'scaleKuiper'
     this.pos = new Vector3(0,0,0)
-    this.velMax = 5e-5
-    this.velMin = 4e-5
-    this.velIncli = 1e-5
+    this.maxSpeed = 9.7e-5
+    this.minSpeed = 5.6e-5
+    this.inclSpeed = 1e-7
+    this.R = R
 
     this.element = new Object(
       this.name,
@@ -72,7 +70,7 @@ export class Kuiper {
       colors.push(aleat.color)
       sizes.push(aleat.size)
 
-      pushShift(shift, 80);
+      pushShift(shift, 100);
       coord.push(new Vector3(x, y, z))
     }
 

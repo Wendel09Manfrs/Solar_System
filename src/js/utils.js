@@ -1,15 +1,12 @@
-import { Vector3 } from 'three'
+import { Vector3, MathUtils } from 'three'
 import {
   ARM_X_DIST,
-  GALAXY_THICKNESS,
   SPIRAL,
 } from './configEntities/galaxyConfig.js'
 
 import { Easing, Tween, update as tweenUpdate } from '@tweenjs/tween.js'
 
 import { controls } from './script.js'
-
-import { commands } from './gui/gui'
 
 import { sceneManager } from './script.js'
 
@@ -21,12 +18,7 @@ export function gaussianRandom(mean = 0, stdev = 1) {
   return z * stdev + mean
 }
 
-export function clamp(value, minimum, maximum) {
-  return Math.min(maximum, Math.max(minimum, value))
-}
-
 export function spiral(x, y, z, offset) {
-  const distancia = (26000 * 63241.1 * 2.34117) / 5
   let r = Math.sqrt(x ** 2 + y ** 2 + z ** 2)
   let theta = offset
 
@@ -36,44 +28,39 @@ export function spiral(x, y, z, offset) {
   let exponentialFactor = 0.1
   let radiusMultiplier = Math.exp(-exponentialFactor / r)
   const x1 = r * radiusMultiplier * Math.cos(theta)
-  const y1 = r * radiusMultiplier * Math.sin(theta) - distancia
+  const y1 = r * radiusMultiplier * Math.sin(theta) 
   const z1 = z * Math.random()
 
   return new Vector3(y1, z1, x1)
 }
 
-export function curva(
-  R,
-  H,
-  excentricidade,
-  tempo,
-  velTrans,
-  centerX,
-  centerY,
-  centerZ,
+
+export function orbit(
+  R, H, e, u, cx, cy, cz,
+  ia = 0.01, // Amplitude of the oscillation in the slope
+  ifreq = 0.1, // Frequency of oscillation in slope
+  ra = 0.01, // Radial oscillation amplitude
+  rfreq = 0.1// Radial oscillation frequency
 ) {
-  const u = tempo * velTrans
+  const H_osc = H + ia * Math.sin(ifreq * u);
+  const r_base = (R * (1 - e * e)) / (1 - e * Math.sin(u));
+  const r_osc = r_base + ra * Math.sin(rfreq * u);
 
-  const r =
-    (R * (1 - excentricidade * excentricidade)) /
-    (1 - excentricidade * Math.sin(u))
+  const x = r_osc * Math.sin(u) + cx;
+  const y = r_osc * Math.cos(u) * Math.sin(-H_osc) + cy;
+  const z = r_osc * Math.cos(u) * Math.cos(-H_osc) + cz;
 
-  const x = r * Math.sin(u) + centerX
-  const y = r * Math.cos(u) * Math.sin(-H) + centerY
-  const z = r * Math.cos(u) * Math.cos(-H) + centerZ
-
-  return { x, y, z }
+  return { x, y, z };
 }
 
-export function anima(center, part, velocidadeTr, velmax, velmin) {
+export function animateParts(center, part, time, velmax, velmin) {
   let centerX = center.x
-  let centerY = center.y
   let centerZ = center.z
 
   let partPos = part.element.objects.geometry.attributes.position.array
 
   for (let i = 0; i < partPos.length; i += 3) {
-    const varVelocity = Math.random() * (velmax - velmin) + velmin
+    const varSpeed = Math.random() * (velmax - velmin) + velmin
     let radius = Math.sqrt(
       (partPos[i] - centerX) ** 2 + (partPos[i + 2] - centerZ) ** 2,
     )
@@ -82,7 +69,7 @@ export function anima(center, part, velocidadeTr, velmax, velmin) {
       partPos[i] - centerX,
     )
 
-    const speed = (velocidadeTr * varVelocity) / Math.sqrt(radius, 2)
+    const speed = (-time * varSpeed) / Math.sqrt(radius, 2)
     const theta = orbitalAngle + speed
 
     partPos[i] = centerX + radius * Math.cos(theta)
@@ -102,82 +89,117 @@ export function updateSize(sizeSet, part) {
 }
 
 let camLookTarget
-let astroPos
-let astroPosFollow
+
+let objectPos
 
 function init() {
   camLookTarget = new Vector3()
-  astroPos = new Vector3()
-  astroPosFollow = new Vector3()
+  objectPos = new Vector3()
+  posCloser = new Vector3()
 }
 init()
 
 
-let prevPos = new Vector3();
 
-export function followCamera(astro, camera) {
-  const astroInfo = astro
-  astroInfo.mesh.getWorldPosition(astroPosFollow)
-  const currentPos = astroPosFollow;
-  const movDelt = currentPos.clone().sub(prevPos);
-  camera.position.add(movDelt);
-  prevPos = currentPos.clone();
-}
 
-export function atualizarCameraParaAstro(astro, camera) {
-  sceneManager.orbitC.enabled = false
-  const astroInfo = astro
-  astroInfo.mesh.getWorldPosition(astroPos)
-  const { x, y, z } = astroPos
+export function updateCamFor(object, camera, distCloser) {
+  sceneManager.orbitC.enabled = false;
+  object.mesh.getWorldPosition(objectPos);
+
+  const { x, y, z } = objectPos;
   const target = {
-    x: x - astroInfo.size * 2,
-    y: y + astroInfo.size * 3,
-    z: z - astroInfo.size * 4,
-  }
+    x: x - object.size * 3,
+    y: y + object.size * 3,
+    z: z - object.size * 3,
+  };
 
-  switch (controls.mode) {
-    case 'tween':
-      tweenUpdate()
+  const modeActions = {
+    tween: () => {
+      tweenUpdate();
       new Tween(camera.position)
         .to(target)
-        .duration(400)
+        .duration(1000)
         .easing(Easing.Cubic.Out)
-        .start()
+        .start();
 
       new Tween(camLookTarget)
-        .to(astroPos)
+        .to(objectPos)
         .easing(Easing.Cubic.Out)
-        .duration(100)
+        .duration(500)
         .onUpdate(() => camera.lookAt(camLookTarget))
-        .start()
-      break
-
-    case 'orbit':
-      sceneManager.orbitC.enabled = true
-      sceneManager.orbitC.target.copy(astroPos)
-      sceneManager.orbitC.minDistance = astroInfo.size * 2.5
-      sceneManager.orbitC.update()
-      break
-
-    case 'freeCamera':
-      sceneManager.fly.movementSpeed = controls.velCam
-      sceneManager.fly.rollSpeed = controls.velRotCam
+        .start();
+    },
+    orbit: () => {
+      tweenUpdate();
+      sceneManager.orbitC.enabled = true;
+      sceneManager.orbitC.target.copy(objectPos);
+      sceneManager.orbitC.minDistance = object.size * 2.5;
+      sceneManager.orbitC.update();
+    },
+    freeCamera: () => {
+      tweenUpdate();
+      sceneManager.fly.movementSpeed = controls.speedCam * distCloser;
+      sceneManager.fly.rollSpeed = controls.speedRotCam;
 
       sceneManager.renderer.domElement.addEventListener('mouseenter', () => {
-        sceneManager.fly.enabled = true
-      })
+        sceneManager.fly.enabled = true;
+      });
 
       sceneManager.renderer.domElement.addEventListener('mouseleave', () => {
-        sceneManager.fly.enabled = false
-      })
-      sceneManager.fly.update(0.01)
-      break
+        sceneManager.fly.enabled = false;
+      });
 
-    default:
-      break
+      sceneManager.fly.update(0.01);
+    }
+  };
+
+  if (modeActions[controls.mode]) {
+    modeActions[controls.mode]();
   }
-  camLookTarget.set(x, y, z)
+
+  camLookTarget.set(x, y, z);
 }
+
+
+
+
+export function mapValue(x) {
+  const inputMin = 8e-5;
+  const inputMax = 1e-2;
+  const outputMin = 0.5;
+  const outputMax = 0.7;
+  const y = MathUtils.mapLinear(x, inputMin, inputMax, outputMin, outputMax);
+  return Math.round(y * 100) / 100;
+}
+
+export function findClosestBody(camera, objects) {
+  let minDist = Infinity;
+
+  for (let key in objects) {
+    if (objects.hasOwnProperty(key)) {
+      let object = objects[key];
+      if (object.mesh) {
+        object.mesh.getWorldPosition(posCloser)
+        let distance = camera.position.distanceTo(posCloser);
+        if (distance < minDist) {
+          minDist = distance;
+          labelCloser = key;
+        }
+      }
+    }
+  }
+  return {minDist:minDist, labCloser:labelCloser };
+}
+
+export function calculateOpacity(camera, galaxyCenter, galaxyNormal) {
+  let cameraDirection = new Vector3();
+  cameraDirection.subVectors(camera.position, galaxyCenter).normalize();
+  let dotProduct = Math.abs(cameraDirection.dot(galaxyNormal));
+  let opacity = ((0.08 - 0.01) * dotProduct + 0.01);
+  return opacity;
+}
+
+
 
 
 

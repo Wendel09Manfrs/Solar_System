@@ -1,4 +1,4 @@
-  import {Vector3} from 'three'
+import {Vector3} from 'three'
 
 import { attributs } from '../configEntities/oortAttribut.js'
 
@@ -7,27 +7,23 @@ import { pushShift } from '../groupsEntities/entitiesGroups.js'
 
 import { Object } from '../groupsEntities/entitiesGroups.js'
 
-
 import { sun } from '../script.js'
-
-import {commands} from '../gui/gui.js'
 
 export class CloudOort {
   constructor(name, qtd, meteourTexture, blending) {
     this.posInt = []
     this.posCut = []
-    this.radiusOort = 23.47116 * 200000
+    this.R = 23.47116 * 200000
     this.name = name
-    this.distCam = this.radiusOort * 100
+    this.distCam = this.R * 100
     this.qtd = qtd
     this.meteourTexture = meteourTexture
     this.blending = blending
     this.parameters = this.generateAttr(this.qtd)
-    this.controls = 'scaleOort'
     this.pos = new Vector3(0,0,0)
-    this.velMax = 5e-5
-    this.velMin = 4e-5
-    this.velIncli = 1e-7
+    this.maxSpeed = 1.5e-6
+    this.minSpeed = 9e-7
+    this.inclSpeed = 8e-11
 
     this.element = new Object(
       this.name,
@@ -55,7 +51,7 @@ export class CloudOort {
       const theta = Math.random() * Math.PI * 2
       const phi = Math.acos(2 * Math.random() - 1) / 1.75
 
-      const raio = Math.cbrt(Math.random()) * this.radiusOort
+      const raio = Math.cbrt(Math.random()) * this.R
       const x = raio * Math.cos(theta) * Math.sin(phi)
       const z = raio * Math.sin(phi) * Math.sin(theta)
       const y = raio * Math.cos(phi)
@@ -69,24 +65,22 @@ export class CloudOort {
         sizes.push(aleat.size)
 
       if (
-        (!inEllipsoid(x, y, z, phi, this.radiusOort) ||
-          !isInCenter(x, y, z, phi, this.radiusOort)) &&
-        distance > this.radiusOort * 0.02
+        (!inEllipsoid(x, y, z, phi, this.R) ||
+          !isInCenter(x, y, z, phi, this.R)) &&
+        distance > this.R * 0.02
       ) {
         
         coord.push(new Vector3(x, y, z))
         coord.push(new Vector3(x, y2, z))
         pushShift(shift, 100000);
   
-      }
-
-      
+      }     
     }
     return { coord, colors, sizes,shift }
   }
 
   labelPosition() {
-    const position = new Vector3(0, this.radiusOort, 0)
+    const position = new Vector3(0, this.R, 0)
 
     return position
   }

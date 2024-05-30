@@ -11,8 +11,6 @@ import { sun } from '../script.js'
 
 import { pushShift } from '../groupsEntities/entitiesGroups.js'
 
-import {commands} from '../gui/gui.js'
-
 export class Belt {
   constructor(name, qtd, meteourTexture, blending) {
     this.name = name
@@ -21,11 +19,11 @@ export class Belt {
     this.meteourTexture = meteourTexture
     this.blending = blending
     this.parameters = this.generateAttr(this.qtd)
-    this.controls = 'scaleBelt'
     this.pos = new Vector3(0,0,0)
-    this.velMax = 5e-5
-    this.velMin = 4e-5
-    this.velIncli = 1e-4
+    this.maxSpeed = 8.8e-4
+    this.minSpeed = 1.5e-4
+    this.inclSpeed = 2e-7
+    this.R = R
 
     this.element = new Object(
       this.name,
@@ -68,7 +66,7 @@ export class Belt {
       colors.push(aleat.color)
       sizes.push(aleat.size)
 
-      pushShift(shift, 2);
+      pushShift(shift, 2.5);
 
       coord.push(new Vector3(x, y, z))
     }
