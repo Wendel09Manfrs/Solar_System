@@ -92,6 +92,8 @@ let camLookTarget
 
 let objectPos
 
+let posCloser
+
 function init() {
   camLookTarget = new Vector3()
   objectPos = new Vector3()
@@ -174,6 +176,7 @@ export function mapValue(x) {
 
 export function findClosestBody(camera, objects) {
   let minDist = Infinity;
+  let labelCloser
 
   for (let key in objects) {
     if (objects.hasOwnProperty(key)) {
