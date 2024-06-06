@@ -4,23 +4,27 @@ import {
   AdditiveBlending,
   Clock,
   AlwaysDepth,
-  Color
+  Color,
+  NoBlending
 } from 'three'
 
 import { Planet } from './entities/planet'
 import { Satellite } from './entities/satellite'
 import { Star } from './entities/star'
 
+import {Comet} from './entities/comet.js'
+
 import { BlackHole } from './entities/blackHole.js'
 import { WhiteHole } from './entities/whiteHole.js'
 
-import { commands } from './gui/gui'
+import { GuiInterface } from './gui/gui'
 
 import { Nebula } from './groupsEntities/nebula.js'
 import { Galaxy } from './groupsEntities/galaxy.js'
 import { Belt } from './groupsEntities/asteroidsBelt.js'
 import { Kuiper } from './groupsEntities/asteroidsKuiper.js'
 import { CloudOort } from './groupsEntities/cloudOort.js'
+
 
 import { updateCamFor } from './utils.js'
 
@@ -55,10 +59,16 @@ import starsTexture from '../../assets/textures/star.png'
 import { SceneManager } from './configScene/scene.js'
 import {animateParts, findClosestBody, orbit, calculateOpacity} from './utils.js'
 
+
+import * as THREE from 'three';
+
+
+
+
+
+
 export const sceneManager = new SceneManager()
 sceneManager.init()
-
-export let controls = commands.controls
 
 var renderer = sceneManager.renderer
 export let scene = sceneManager.scene
@@ -76,6 +86,7 @@ const whiteHole = new WhiteHole(3.7654, 'White Hole', posHoleWhite)
 
 const posSun = new Vector3()
 const velSun = -9.016846e-11
+
 
 export const sun = new Star(
   new Vector3(0, 0, 0),
@@ -97,6 +108,8 @@ const mercury = new Planet(
   8.264e-2,
   1.24e-1,
   0.2056,
+  1.35186223,
+  0.84351763,
   'Mercury',
   new Color(0xddadad),
   new Color(0x808080),
@@ -114,6 +127,8 @@ const venus = new Planet(
   3.232e-2,
   2.99259e-2,
   0.0068,
+  2.2956,
+  1.338,
   'Venus',
   new Color(0xe6e4a8),
   new Color(0xf5deb3),
@@ -121,15 +136,19 @@ const venus = new Planet(
 
 venus.mesh.add(venus.meshAtm)
 
+
+
 const earth = new Planet(
   1e-3,
   earthTexture,
-  23.47116,
+  23.47, 
   23.44,
   0.12487,
   1.992e-2,
   7.2921,
   0.0167,
+  1.796,
+  3.05,
   'Earth',
   new Color(0x67ceeb),
   new Color(0x2faefb),
@@ -143,6 +162,8 @@ const moon = new Satellite(
   2.6617e-1,
   2.6617e-1,
   0.0549,
+  0,
+  0,
   'moon',
   earth
 )
@@ -156,6 +177,8 @@ const mars = new Planet(
   1.059e-2,
   7.0882,
   0.0934,
+  5.865,
+  0.864,
   'Mars',
   new Color(0xffa07a),
   new Color(0xe9967a),
@@ -169,6 +192,8 @@ const jupiter = new Planet(
   1.673e-3,
   1.7734e1,
   0.0484,
+  0.2574,
+  1.753,
   'Jupiter',
   new Color(0x00b68c),
   new Color(0xd2b48c),
@@ -183,10 +208,12 @@ const saturn = new Planet(
   9.294e-4,
   1.63624e1,
   0.0541,
+  1.613,
+  1.983,
   'Saturn',
   new Color(0xf5deb3),
   new Color(0xd2b48c),
-
+  
   {
     innerRadius: 1.17e-2,
     outerRadius: 2.15e-2,
@@ -202,6 +229,8 @@ const uranus = new Planet(
   2.37e-4,
   1.041e1,
   0.0472,
+  2.983,
+  1.29,
   'Uranus',
   new Color(0xafeeee),
   new Color(0x40e0d0),
@@ -213,10 +242,6 @@ const uranus = new Planet(
   },
 )
 
-
-
-
-
 const neptune = new Planet(
   3.85e-3,
   neptuneTexture,
@@ -226,6 +251,8 @@ const neptune = new Planet(
   1.208e-4,
   1.08e1,
   0.0086,
+  0.784,
+  2.3,
   'Neptune',
   new Color(0x4169e1),
   new Color(0x005fff),
@@ -239,6 +266,8 @@ const pluto = new Planet(
   8.01e-5,
   1.2956,
   0.2488,
+  1.985,
+  1.925,
   'Pluto',
   new Color(0x00eeff),
   new Color(0xfae2ff),
@@ -253,6 +282,8 @@ const europa = new Satellite(
   2.053433773,
   2.053715175,
   0.0094,
+  0,
+  0,
   'Europa',
   jupiter,
 )
@@ -266,6 +297,8 @@ const callisto = new Satellite(
   4.369409e-1,
   4.369445e-1,
   0.0074,
+  0,
+  0,
   'Callisto',
   jupiter,
 )
@@ -278,6 +311,8 @@ const ganymede = new Satellite(
   1.019227339,
   1.019227339,
   0.0013,
+  0,
+  0,
   'Ganymede',
   jupiter,
 )
@@ -290,6 +325,8 @@ const iO = new Satellite(
   4.12,
   4.129,
   0.004,
+  0,
+  0,
   'iO',
   jupiter,
 )
@@ -303,6 +340,8 @@ const dione = new Satellite(
   2.664,
   2.664,
   0.022,
+  0,
+  0,
   'Dione',
   saturn,
 )
@@ -315,6 +354,8 @@ const iapetus = new Satellite(
   9.193e-2,
   9.1956e-2,
   0.0281,
+  0,
+  0,
   'Iapetus',
   saturn,
 )
@@ -327,6 +368,8 @@ const rhea = new Satellite(
   1.6139,
   1.614,
   0.002583,
+  0,
+  0,
   'Rhea',
   saturn,
 )
@@ -339,9 +382,14 @@ const titan = new Satellite(
   4.9678e-1,
   4.9678e-1,
   0.0288,
+  0,
+  0,
   'Titan',
   saturn,
 )
+
+
+
 
 
 
@@ -360,22 +408,39 @@ let nebula = new Nebula(null, 2000, AdditiveBlending)
 let belt = new Belt('Asteroid Belt', 2000, meteourTexture, AlwaysDepth)
 
 let kuiper = new Kuiper(
-  -0.45,
+  -0.35,
   'Kuiper Belt',
-  2000,
+  4000,
   meteourTexture,
   AlwaysDepth,
 )
 
 let kuiper2 = new Kuiper(
-  0.55,
+  0.75,
   'Kuiper Belt',
-  2000,
+  4000,
   meteourTexture,
   AlwaysDepth,
 )
 
-let oort = new CloudOort('Oort Cloud', 15000, meteourTexture, AlwaysDepth)
+let oort = new CloudOort('Oort Cloud', 15000, meteourTexture,NoBlending)
+
+const halley = new Comet(
+  5e-5,
+  null,
+  418.42,
+  162,
+  -2.83,
+  2.66e-4,
+  0.9854,
+  0.967,
+  1.955,
+  1.036,
+  'Halley'
+);
+
+
+
 
 const bodies = {
   whitehole: whiteHole,
@@ -399,6 +464,7 @@ const bodies = {
   iapetus: iapetus,
   titan: titan,
   rhea: rhea,
+  halley:halley
 }
 
 export const particles = {
@@ -410,6 +476,10 @@ export const particles = {
 }
 
 
+
+let commands = new GuiInterface(particles, camera)
+
+let controls = commands.controls
 
 var clock = new Clock()
 
@@ -477,13 +547,20 @@ function updateOrbitingBody(body, time, controls) {
     body.ia,
     body.ifreq,
     body.ra,
-    body.rfreq
+    body.rfreq,
+    body.precession
   );
   body.mesh.position.set(posCurrent.x, posCurrent.y, posCurrent.z);
+  body.animate(speedObj)
 
   body.mesh.rotation.y = time * body.speedRot;
+
   body.orbit.visible = controls.orbitLine;
+
+
+ 
 }
+
 
 
 function updateNonOrbitingBody(body, speed, controls, camera) {
@@ -496,6 +573,8 @@ function updateParticles(particles, speed, posSun, camera, controls, distSun) {
   Object.keys(particles).forEach(group => {
     const particleGroup = particles[group];
     particleGroup.element.setLabelVisible(posSun, camera, controls.labVisible);
+
+    particleGroup.centerOrbit()
     animateParts(
       particleGroup.pos,
       particleGroup,
@@ -527,19 +606,22 @@ function updateCameraAndDistortion(controls, camera, posHoleBlack, posHoleWhite)
     applyDistortion(whiteHole);
   }
 }
-
-
 let speed
 function animate() {
+
 
   speed = commands.timeUnits[controls.timeUnit]
    
   time += clock.getDelta() *speed;
+
   sun.mesh.getWorldPosition(posSun);
 
   Object.keys(bodies).forEach(key => {
     updateBody(bodies[key], time, speed, controls, camera);
   });
+
+
+  halley.tail.animate(posSun)
 
   sun.update(clock, renderer);
 
@@ -555,15 +637,17 @@ function animate() {
   bodiesLabel()
 
   const closerObj = findClosestBody(camera, bodies);
-  updateCamFor(bodies[controls.camTarget], camera, closerObj.minDist);
+  updateCamFor(controls, bodies[controls.camTarget], camera, closerObj.minDist);
 
   if (bodies[closerObj.labCloser].orbitRadius) {
     bodies[closerObj.labCloser].detectCollision(camera);
   }
 
-
+  
   renderer.render(sceneManager.composition.scene, sceneManager.composition.camera);
   sceneManager.labelRenderer.render(scene, camera);
+
+  commands.stats.update()
 }
 
 renderer.setAnimationLoop(animate);

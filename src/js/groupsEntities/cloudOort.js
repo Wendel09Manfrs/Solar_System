@@ -33,8 +33,6 @@ export class CloudOort {
       this.blending,
       this.meteourTexture,
     )
-
-    sun.mesh.add(this.element.objects)
   }
 
   generateAttr(numPoints) {
@@ -83,6 +81,9 @@ export class CloudOort {
     const position = new Vector3(0, this.R, 0)
 
     return position
+  }
+  centerOrbit() {
+    this.element.objects.position.copy(sun.mesh.position)
   }
 }
 

@@ -26,13 +26,16 @@ export class Planet extends Entity {
     speedTrans,
     speedRot,
     eccentricity,
+    argPeriapsis,
+    longAscNode,
     label,
     color1atm,
     color2atm,
     ring
   ) {
     const position = new Vector3();
-    super(position, size, texture, orbitRadius, inclinRot, orbitInclin, speedTrans, speedRot, eccentricity, label);
+    super(position, size, texture, orbitRadius, inclinRot, orbitInclin, speedTrans, speedRot, eccentricity,argPeriapsis,
+longAscNode, label);
 
     this.ring = ring;
     this.color1atm = color1atm;

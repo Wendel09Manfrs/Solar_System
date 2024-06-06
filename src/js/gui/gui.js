@@ -1,10 +1,12 @@
 import { Vector3 } from 'three'
 import { GUI } from 'lil-gui'
 import { updateSize } from '../utils.js'
-import { particles, sceneManager } from '../script.js'
+
+import Stats from 'stats.js';
+
 
 export class GuiInterface {
-  constructor() {
+  constructor(particles, camera) {
     this.gui = new GUI()
     this.controls = {
       speedCam: 1,
@@ -60,6 +62,7 @@ export class GuiInterface {
       Iapetus: 'iapetus',
       Titan: 'titan',
       Rhea: 'rhea',
+      Halley:'halley'
     }
 
     this.optionsCam = {
@@ -91,6 +94,11 @@ export class GuiInterface {
       },
     }
 
+
+this.stats = new Stats()
+this.stats.showPanel(1) 
+document.body.appendChild(this.stats.dom)
+
     const astroFolder = this.gui.addFolder('Astro Parameters')
     const cameraFolder = this.gui.addFolder('Camera Parameters')
     const sizeFolder = this.gui.addFolder('Scale of elements')
@@ -111,7 +119,7 @@ export class GuiInterface {
       .add(this.controls, 'camTarget', this.gruposDeOpcoes)
       .name('Astro')
       .onChange(() => {
-        sceneManager.camera.getWorldPosition(this.camPosIni)
+        camera.getWorldPosition(this.camPosIni)
         this.camControl = true
       })
 
@@ -124,7 +132,7 @@ export class GuiInterface {
       .add(this.controls, 'relativeCam')
       .name('Relative Motion Camera')
       .onChange(() => {
-        sceneManager.camera.getWorldPosition(this.camPosIni)
+        camera.getWorldPosition(this.camPosIni)
 
         this.camControl = true
       })
@@ -204,4 +212,3 @@ export class GuiInterface {
 
 }
 
-export let commands = new GuiInterface()

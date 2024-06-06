@@ -38,7 +38,6 @@ export class Kuiper {
       this.blending,
       this.meteourTexture,
     )
-    sun.mesh.add(this.element.objects)
   }
 
   generateAttr(numPoints) {
@@ -62,8 +61,8 @@ export class Kuiper {
       const phiStdDev = Math.PI * phiSet
       const phi = randomNormal(phiMean, phiStdDev) * this.circle
 
-      const x = (targetC + targetR * Math.cos(theta)) * Math.cos(phi)
-      const z = (targetC + targetR * Math.cos(theta)) * Math.sin(phi)
+      const x = (targetC + 2*targetR * Math.cos(theta)) * Math.cos(phi)
+      const z = (targetC + 2*targetR * Math.cos(theta)) * Math.sin(phi)
       const y = targetR * Math.sin(theta)
 
       let aleat = colorSizeAleat(attributs)
@@ -80,5 +79,8 @@ export class Kuiper {
     const position = new Vector3(R, r, 0)
 
     return position
+  }
+  centerOrbit() {
+    this.element.objects.position.copy(sun.mesh.position)
   }
 }

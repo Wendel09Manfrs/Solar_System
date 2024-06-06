@@ -13,11 +13,13 @@ export class Satellite extends Entity {
       speedTrans,
       speedRot,
       eccentricity,
+      argPeriapsis,
+      longAscNode,
       label,
       planet
     ) {
       let position = new Vector3()
-      super(position, size, texture, orbitRadius, inclinRot, orbitInclin, speedTrans, speedRot, eccentricity, label);
+      super(position, size, texture, orbitRadius, inclinRot, orbitInclin, speedTrans, speedRot, eccentricity,argPeriapsis,longAscNode, label);
       this.planet = planet
     }
     centerOrbit(){

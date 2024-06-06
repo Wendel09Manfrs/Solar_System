@@ -33,9 +33,6 @@ export class Belt {
       this.blending,
       this.meteourTexture,
     )
-
-
-    sun.mesh.add(this.element.objects)
     
   }
 
@@ -77,6 +74,10 @@ export class Belt {
     const position = new Vector3(R, r, 0)
 
     return position
+  }
+
+  centerOrbit() {
+    this.element.objects.position.copy(sun.mesh.position)
   }
 }
 

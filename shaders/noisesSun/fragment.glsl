@@ -14,9 +14,6 @@ varying vec3 eyeVector;
 
 float PI = 3.141592653589793238;
 
-// float Fresnel(vec3 eyeVector, vec3 worldNormal){
-//     return pow( 1.0 +dot(eyeVector, worldNormal), 3.0);
-// }
 
 vec3 brightnessToColor(float b){
     b *=0.25;

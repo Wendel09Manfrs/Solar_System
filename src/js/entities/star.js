@@ -40,7 +40,7 @@ import { scene, sceneManager } from '../script';
 
 export class Star extends Entity {
   constructor(position, size, orbitRadius, inclinRot, orbitInclin, speedTrans, speedRot, eccentricity, label) {
-    super(position, size, null, orbitRadius, inclinRot, orbitInclin, speedTrans, speedRot, eccentricity, label);
+    super(position, size, null, orbitRadius, inclinRot, orbitInclin, speedTrans, speedRot, eccentricity,0,0, label);
     this.eruptionsList = [];
     this.eruptionsInclin = [];
     this.pos = position;
@@ -258,7 +258,7 @@ export class Star extends Entity {
 
     this.eruptionsList.forEach((eruption, i) => {
       eruption.rotation.z += this.eruptionsInclin[i];
-      eruption.rotation.x += -1.1e-2 * this.eruptionsInclin[i];
+      eruption.rotation.x += 1.1e-2 * this.eruptionsInclin[i];
       eruption.rotation.y += 1.5e-2 * this.eruptionsInclin[i];
       eruption.material.uniforms.uTime.value = elapsedTime * this.eruptionsInclin[i] * 1e2;
     });

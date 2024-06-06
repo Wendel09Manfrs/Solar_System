@@ -81,8 +81,7 @@ export class Object {
 
         transparent: true,
         blending: this.blending,
-        depthWrite: true,
-        depthTest: false,
+        depthWrite: false,
       })
     }
 

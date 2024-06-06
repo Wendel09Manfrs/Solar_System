@@ -97,6 +97,10 @@ export class Nebula {
 
     return position
   }
+
+  centerOrbit() {
+    this.element.objects.position.copy(this.pos)
+  }
 }
 
 export function colorSizeAleat(attributs) {

@@ -6,8 +6,6 @@ import {
 
 import { Easing, Tween, update as tweenUpdate } from '@tweenjs/tween.js'
 
-import { controls } from './script.js'
-
 import { sceneManager } from './script.js'
 
 export function gaussianRandom(mean = 0, stdev = 1) {
@@ -34,24 +32,57 @@ export function spiral(x, y, z, offset) {
   return new Vector3(y1, z1, x1)
 }
 
+export function rotateAroundAxisY(x, y, z, angle) {
+  let cosAngle = Math.cos(angle);
+  let sinAngle = Math.sin(angle);
+
+  let newX = x * cosAngle + z * sinAngle;
+  let newY = y; 
+  let newZ = -x * sinAngle + z * cosAngle;
+
+  return { newX, newY, newZ };
+}
 
 export function orbit(
-  R, H, e, u, cx, cy, cz,
-  ia = 0.01, // Amplitude of the oscillation in the slope
+  R, H, e, M, cx, cy, cz,
+  ia = 0.1, // Amplitude of the oscillation in the slope
   ifreq = 0.1, // Frequency of oscillation in slope
   ra = 0.01, // Radial oscillation amplitude
-  rfreq = 0.1// Radial oscillation frequency
+  rfreq = 0.1, // Radial oscillation frequency
+  precession
 ) {
-  const H_osc = H + ia * Math.sin(ifreq * u);
-  const r_base = (R * (1 - e * e)) / (1 - e * Math.sin(u));
-  const r_osc = r_base + ra * Math.sin(rfreq * u);
+  const tol = 1e-4;
+  let E = M;
 
-  const x = r_osc * Math.sin(u) + cx;
-  const y = r_osc * Math.cos(u) * Math.sin(-H_osc) + cy;
-  const z = r_osc * Math.cos(u) * Math.cos(-H_osc) + cz;
+  let delta = 1;
+  while (Math.abs(delta) > tol) {
+    delta = E - e * Math.sin(E) - M;
+    E -= delta / (1 - e * Math.cos(E));
+  }
+
+  let theta = 2 * Math.atan2(Math.sqrt(1 + e) * Math.sin(E / 2), Math.sqrt(1 - e) * Math.cos(E / 2));
+
+  let u = theta; 
+  let H_osc = H + ia * Math.sin(ifreq * (u));
+  let r_base = (R * (1 - e * e)) / (1 + e * Math.cos(u));
+  let r_osc = r_base + ra * Math.sin(rfreq * (u));
+
+  let x = r_osc * Math.sin(u);
+  let y = r_osc * Math.cos(u) * Math.sin(-H_osc);
+  let z = r_osc * Math.cos(u) * Math.cos(-H_osc);
+  let precessionAngle = M*precession ; 
+  let rotated = rotateAroundAxisY(x, y, z, precessionAngle);
+
+  x = rotated.newX + cx;
+  y = rotated.newY + cy;
+  z = rotated.newZ + cz;
+
 
   return { x, y, z };
 }
+
+
+
 
 export function animateParts(center, part, time, velmax, velmin) {
   let centerX = center.x
@@ -104,7 +135,7 @@ init()
 
 
 
-export function updateCamFor(object, camera, distCloser) {
+export function updateCamFor(controls, object, camera, distCloser) {
   sceneManager.orbitC.enabled = false;
   object.mesh.getWorldPosition(objectPos);
 
@@ -162,17 +193,6 @@ export function updateCamFor(object, camera, distCloser) {
   camLookTarget.set(x, y, z);
 }
 
-
-
-
-export function mapValue(x) {
-  const inputMin = 8e-5;
-  const inputMax = 1e-2;
-  const outputMin = 0.5;
-  const outputMax = 0.7;
-  const y = MathUtils.mapLinear(x, inputMin, inputMax, outputMin, outputMax);
-  return Math.round(y * 100) / 100;
-}
 
 export function findClosestBody(camera, objects) {
   let minDist = Infinity;
