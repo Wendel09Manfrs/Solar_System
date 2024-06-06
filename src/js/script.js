@@ -58,15 +58,6 @@ import starsTexture from '../../assets/textures/star.png'
 
 import { SceneManager } from './configScene/scene.js'
 import {animateParts, findClosestBody, orbit, calculateOpacity} from './utils.js'
-
-
-import * as THREE from 'three';
-
-
-
-
-
-
 export const sceneManager = new SceneManager()
 sceneManager.init()
 
@@ -388,12 +379,6 @@ const titan = new Satellite(
   saturn,
 )
 
-
-
-
-
-
-
 let galaxy = new Galaxy(
   'Milk Way Galaxy',
   15000,
@@ -423,7 +408,7 @@ let kuiper2 = new Kuiper(
   AlwaysDepth,
 )
 
-let oort = new CloudOort('Oort Cloud', 15000, meteourTexture,NoBlending)
+let oort = new CloudOort('Oort Cloud', 15000, meteourTexture,AlwaysDepth)
 
 const halley = new Comet(
   5e-5,
