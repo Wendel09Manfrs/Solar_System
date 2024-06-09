@@ -49,7 +49,9 @@ export function orbit(
   ifreq = 0.1, // Frequency of oscillation in slope
   ra = 0.01, // Radial oscillation amplitude
   rfreq = 0.1, // Radial oscillation frequency
-  precession
+  argPeriapsis, // Argumento do Periélio
+  longAscNode, 
+  precession 
 ) {
   const tol = 1e-4;
   let E = M;
@@ -67,11 +69,14 @@ export function orbit(
   let r_base = (R * (1 - e * e)) / (1 + e * Math.cos(u));
   let r_osc = r_base + ra * Math.sin(rfreq * (u));
 
-  let x = r_osc * Math.sin(u);
-  let y = r_osc * Math.cos(u) * Math.sin(-H_osc);
-  let z = r_osc * Math.cos(u) * Math.cos(-H_osc);
-  let precessionAngle = M*precession ; 
-  let rotated = rotateAroundAxisY(x, y, z, precessionAngle);
+  let x = r_osc * Math.sin(theta + argPeriapsis);
+  let y = r_osc * Math.cos(theta ) * Math.sin(H_osc);
+  let z = r_osc * Math.cos(theta + argPeriapsis) * Math.cos(H_osc);
+
+    let precessionAngle = M*precession ;
+    
+    let sumPrecession = precessionAngle + longAscNode
+  let rotated = rotateAroundAxisY(x, y, z, sumPrecession );
 
   x = rotated.newX + cx;
   y = rotated.newY + cy;

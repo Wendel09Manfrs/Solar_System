@@ -30,30 +30,43 @@ import { updateCamFor } from './utils.js'
 
 import mercuryTexture from '../../assets/textures/mercuryReal.jpg'
 import venusTexture from '../../assets/textures/venusReal.jpg'
+
 import earthTexture from '../../assets/textures/earthReal.jpg'
-
-import marsTexture from '../../assets/textures/marsReal.jpg'
-import saturnTexture from '../../assets/textures/saturnReal.jpg'
-import jupiterTexture from '../../assets/textures/jupiterReal.jpg'
-import uranusTexture from '../../assets/textures/uranusReal.jpg'
-import ringSaturnTexture from '../../assets/textures/saturn-rings.png'
-import ringUranusTexture from '../../assets/textures/uranus-ring.png'
-import neptuneTexture from '../../assets/textures/neptuneReal.jpg'
-import plutoTexture from '../../assets/textures/pluto.jpg'
-
-import meteourTexture from '../../assets/textures/meteour.png'
-
 import moonTexture from '../../assets/textures/moon.jpg'
 
+import marsTexture from '../../assets/textures/marsReal.jpg'
+
+import saturnTexture from '../../assets/textures/saturnReal.jpg'
+import dioneTexture from '../../assets/textures/dioneSaturn.jpg'
+import iapetusTexture from '../../assets/textures/iapetusSaturn.jpg'
+import rheaTexture from '../../assets/textures/rheaSaturn.jpg'
+import titanTexture from '../../assets/textures/titanSaturn.jpg'
+import thetysTexture from '../../assets/textures/thetys.png'
+
+import jupiterTexture from '../../assets/textures/jupiterReal.jpg'
 import europaTexture from '../../assets/textures/europaJupiter.png'
 import callistoTexture from '../../assets/textures/callistoJupiter.jpg'
 import ganymedeTexture from '../../assets/textures/ganymedeJupiter.jpg'
 import iOTexture from '../../assets/textures/iOJupiter.jpeg'
 
-import dioneTexture from '../../assets/textures/dioneSaturn.jpg'
-import iapetusTexture from '../../assets/textures/iapetusSaturn.jpg'
-import rheaTexture from '../../assets/textures/rheaSaturn.jpg'
-import titanTexture from '../../assets/textures/titanSaturn.jpg'
+import uranusTexture from '../../assets/textures/uranusReal.jpg'
+import ringSaturnTexture from '../../assets/textures/saturn-rings.png'
+import ringUranusTexture from '../../assets/textures/uranus-ring.png'
+
+import titaniaTexture from '../../assets/textures/titania.jpg'
+import umbrielTexture from '../../assets/textures/umbriel.png'
+import oberonTexture from '../../assets/textures/oberon.png'
+import arielTexture from '../../assets/textures/ariel.png'
+
+
+import neptuneTexture from '../../assets/textures/neptuneReal.jpg'
+import tritonTexture from '../../assets/textures/triton.jpg'
+
+import plutoTexture from '../../assets/textures/pluto.jpg'
+import charonTexture from '../../assets/textures/charon.jpg'
+
+import meteourTexture from '../../assets/textures/meteour.png'
+
 import starsTexture from '../../assets/textures/star.png'
 
 import { SceneManager } from './configScene/scene.js'
@@ -83,8 +96,8 @@ export const sun = new Star(
   new Vector3(0, 0, 0),
   1.0929e-1,
   distSargitarius,
-  0,
-  -1.05068821,
+  0.1265364,
+  1.05068821,
   velSun,
   2.916846e-1,
     0,
@@ -95,12 +108,12 @@ const mercury = new Planet(
   mercuryTexture,
   9.09058,
   0.034,
-  0.05899,
+  0.12,
   8.264e-2,
   1.24e-1,
   0.2056,
-  1.35186223,
-  0.84351763,
+  0.5083,
+  0.84351763, 
   'Mercury',
   new Color(0xddadad),
   new Color(0x808080),
@@ -114,11 +127,11 @@ const venus = new Planet(
   venusTexture,
   16.986,
   177.4,
-  0.067369,
+  0.059236,
   3.232e-2,
   2.99259e-2,
   0.0068,
-  2.2956,
+  0.9579,
   1.338,
   'Venus',
   new Color(0xe6e4a8),
@@ -127,19 +140,17 @@ const venus = new Planet(
 
 venus.mesh.add(venus.meshAtm)
 
-
-
 const earth = new Planet(
   1e-3,
   earthTexture,
   23.47, 
   23.44,
-  0.12487,
+  0,
   1.992e-2,
-  7.2921,
+  7.2921, 
   0.0167,
-  1.796,
-  3.05,
+  1.993,
+  0.1965,
   'Earth',
   new Color(0x67ceeb),
   new Color(0x2faefb),
@@ -149,12 +160,12 @@ const moon = new Satellite(
   moonTexture,
   6.0335e-2,
   6.687,
-  0.0898,
+  0.4989,
   2.6617e-1,
   2.6617e-1,
   0.0549,
-  0,
-  0,
+  0.7101,
+  0.3377,
   'moon',
   earth
 )
@@ -164,12 +175,12 @@ const mars = new Planet(
   marsTexture,
   35.743,
   25.19,
-  0.0986111,
+  0.03228859,
   1.059e-2,
   7.0882,
   0.0934,
-  5.865,
-  0.864,
+  5,
+  0.8653,
   'Mars',
   new Color(0xffa07a),
   new Color(0xe9967a),
@@ -179,97 +190,24 @@ const jupiter = new Planet(
   jupiterTexture,
   122.153,
   3.12,
-  0.1062906,
+  0.0228289,
   1.673e-3,
   1.7734e1,
   0.0484,
-  0.2574,
+  4.7798,
   1.753,
   'Jupiter',
   new Color(0x00b68c),
   new Color(0xd2b48c),
 )
 
-const saturn = new Planet(
-  9.45e-3,
-  saturnTexture,
-  224.107,
-  26.73,
-  0.09616764,
-  9.294e-4,
-  1.63624e1,
-  0.0541,
-  1.613,
-  1.983,
-  'Saturn',
-  new Color(0xf5deb3),
-  new Color(0xd2b48c),
-  
-  {
-    innerRadius: 1.17e-2,
-    outerRadius: 2.15e-2,
-    texture: ringSaturnTexture,
-  },
-)
-const uranus = new Planet(
-  3.98e-3,
-  uranusTexture,
-  450.523,
-  97.77,
-  0.1130973,
-  2.37e-4,
-  1.041e1,
-  0.0472,
-  2.983,
-  1.29,
-  'Uranus',
-  new Color(0xafeeee),
-  new Color(0x40e0d0),
-
-  {
-    innerRadius: 5.96e-3,
-    outerRadius: 7.29e-3,
-    texture: ringUranusTexture,
-  },
-)
-
-const neptune = new Planet(
-  3.85e-3,
-  neptuneTexture,
-  706.657,
-  28.32,
-  0.1122247,
-  1.208e-4,
-  1.08e1,
-  0.0086,
-  0.784,
-  2.3,
-  'Neptune',
-  new Color(0x4169e1),
-  new Color(0x005fff),
-)
-const pluto = new Planet(
-  1.9e-4,
-  plutoTexture,
-  927.7436,
-  119.61,
-  0.29917997705,
-  8.01e-5,
-  1.2956,
-  0.2488,
-  1.985,
-  1.925,
-  'Pluto',
-  new Color(0x00eeff),
-  new Color(0xfae2ff),
-)
 
 const europa = new Satellite(
   2.45e-4,
   europaTexture,
   1.0538e-1,
   0.0174533,
-  0.00820304748,
+  0.008203,
   2.053433773,
   2.053715175,
   0.0094,
@@ -322,12 +260,34 @@ const iO = new Satellite(
   jupiter,
 )
 
+const saturn = new Planet(
+  9.45e-3,
+  saturnTexture,
+  224.107,
+  26.73,
+  0.04342,
+  9.294e-4,
+  1.63624e1,
+  0.0541,
+  5.9235,
+  1.983,
+  'Saturn',
+  new Color(0xf5deb3),
+  new Color(0xd2b48c),
+  
+  {
+    innerRadius: 1.17e-2,
+    outerRadius: 2.15e-2,
+    texture: ringSaturnTexture,
+  },
+)
+
 const dione = new Satellite(
   8.821e-5,
   dioneTexture,
   5.931e-2,
   0,
-  0.00033161256,
+  0.00033,
   2.664,
   2.664,
   0.022,
@@ -355,7 +315,7 @@ const rhea = new Satellite(
   rheaTexture,
   8.286e-2,
   0,
-  0.0060213859,
+  0.006021386,
   1.6139,
   1.614,
   0.002583,
@@ -378,6 +338,175 @@ const titan = new Satellite(
   'Titan',
   saturn,
 )
+
+
+const thetys = new Satellite(
+  8.3098e-5 ,
+  thetysTexture,
+  4.623e-2,
+  0,
+  0.01954769,
+  3.86275,
+  3.86275,
+  0.0001,
+  0,
+  0,
+  'Thetys',
+  saturn,
+)
+
+const uranus = new Planet(
+  3.98e-3,
+  uranusTexture,
+  450.523,
+  97.77,
+  0.0135,
+  2.37e-4,
+  1.041e1,
+  0.0472,
+  1.6929,
+  1.2916,
+  'Uranus',
+  new Color(0xafeeee),
+  new Color(0x40e0d0),
+
+  {
+    innerRadius: 5.96e-3,
+    outerRadius: 7.29e-3,
+    texture: ringUranusTexture,
+  },
+)
+
+
+const titania = new Satellite(
+  1.2369e-4 ,
+  titaniaTexture,
+  6.844e-2,
+  0,
+  0.00244346,
+  0.8376,
+  0.8376,
+  0.0022,
+  0,
+  0,
+  'Titania',
+  uranus
+)
+
+
+const oberon = new Satellite(
+  1.1938e-4 ,
+  oberonTexture,
+  9.14e-2,
+  98,
+  0.001,
+  0.54163,
+  0.54163,
+  0.0014,
+  0,
+  0,
+  'Oberon',
+  uranus
+)
+
+
+const umbriel = new Satellite(
+  9.1675e-5 ,
+  umbrielTexture,
+  4.174e-2,
+  0,
+  0.006283,
+  1.7596,
+  1.7596,
+  0.0050,
+  0,
+  0,
+  'Umbriel',
+  uranus
+)
+
+const ariel = new Satellite(
+  9.0765e-5 ,
+  tritonTexture,
+  3e-2,
+  0,
+  0.00541,
+  2.8932,
+  2.8932,
+  0.0034,
+  0,
+  0,
+  'Ariel',
+  uranus
+)
+
+const neptune = new Planet(
+  3.85e-3,
+  neptuneTexture,
+  706.657,
+  28.32,
+  0.030962,
+  1.208e-4,
+  1.08e1,
+  0.0086,
+  4.768,
+  2.3,
+  'Neptune',
+  new Color(0x4169e1),
+  new Color(0x005fff),
+)
+
+const triton = new Satellite(
+  2.1167e-04 ,
+  tritonTexture,
+  5.57e-2,
+  0,
+  2.738159, 
+  1.2408,
+  1.2408,
+  1.6e-5,
+  0,
+  0,
+  'Triton',
+  neptune,
+)
+
+
+
+
+const pluto = new Planet(
+  1.9e-4,
+  plutoTexture,
+  927.7436,
+  119.61,
+  0.29917997705,
+  8.01e-5,
+  1.2956,
+  0.2488,
+  1.98677, 
+  1.925, 
+  'Pluto',
+  new Color(0x00eeff),
+  new Color(0xfae2ff),
+)
+
+
+const charon = new Satellite(
+  9.19e-05 ,
+  charonTexture,
+  3.08e-3,
+  0,
+  2.0872567,
+  1.1416,
+  1.1416,
+  1.61e-4,
+  0,
+  0,
+  'Charon',
+  pluto,
+)
+
+
 
 let galaxy = new Galaxy(
   'Milk Way Galaxy',
@@ -415,17 +544,14 @@ const halley = new Comet(
   null,
   418.42,
   162,
-  -2.83,
+  -2.8326694,
   2.66e-4,
   0.9854,
-  0.967,
-  1.955,
-  1.036,
+  -0.967,
+  1.95564,
+  1.0366557,
   'Halley'
 );
-
-
-
 
 const bodies = {
   whitehole: whiteHole,
@@ -449,7 +575,15 @@ const bodies = {
   iapetus: iapetus,
   titan: titan,
   rhea: rhea,
-  halley:halley
+  halley:halley,
+  thetys: thetys,
+  triton:triton,
+  charon:charon,
+  titania:titania,
+  oberon:oberon,
+  umbriel:umbriel,
+  ariel:ariel,
+
 }
 
 export const particles = {
@@ -533,6 +667,8 @@ function updateOrbitingBody(body, time, controls) {
     body.ifreq,
     body.ra,
     body.rfreq,
+    body.argPeriapsis,
+    body.longAscNode,
     body.precession
   );
   body.mesh.position.set(posCurrent.x, posCurrent.y, posCurrent.z);

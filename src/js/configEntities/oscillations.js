@@ -106,8 +106,8 @@ export const bodies = {
   },
   dione: {
     ia: 0.0001,
-    ifreq: 0.001,
-    ra: 0.0002 * Math.random() + 0.001,
+    ifreq: 0.00001,
+    ra: 0.00002 * Math.random() + 0.0001,
     rfreq: Math.round(3 * Math.random() + 1),
     precession: 6.6e-8
   },
@@ -132,12 +132,62 @@ export const bodies = {
     rfreq: Math.round(3 * Math.random() + 1),
     precession: 2.15e-6
   },
+  thetys: {
+    ia: 0.00002,
+    ifreq: 0.0002,
+    ra: 0.0001 * Math.random(),
+    rfreq: Math.round(1 * Math.random() + 0.002),
+    precession: 1.13e-6
+  },
+  triton: {
+    ia: 0.00001,
+    ifreq: 0.00012,
+    ra: 0.00002 * Math.random(),
+    rfreq: Math.round(1 * Math.random() + 0.0001),
+    precession: 0.6e-6
+  },
+  charon: {
+    ia: 0.00000032,
+    ifreq: 0.000007,
+    ra: 0.00001 * Math.random(),
+    rfreq: Math.round(1 * Math.random() + 0.0002),
+    precession: 0.1e-6
+  },
+
+  titania:{
+    ia: 0.00000005,
+    ifreq: 0.000001,
+    ra: 0.00002 * Math.random(),
+    rfreq: 0.0000001,
+    precession: 0.1e-6
+  },
+  oberon:{
+    ia: 0.000002,
+    ifreq: 0.00001,
+    ra: 0.00001 * Math.random(),
+    rfreq: Math.round(1 * Math.random() + 0.00000221),
+    precession: 0.1e-6
+  },
+  umbriel:{
+    ia: 0.0000006,
+    ifreq: 0.00004,
+    ra: 0.00001 * Math.random(),
+    rfreq: Math.round(1 * Math.random() + 0.000341),
+    precession: 0.1e-6
+  },
+  ariel:{
+    ia: 0.000001,
+    ifreq: 0.00004,
+    ra: 0.00001 * Math.random(),
+    rfreq: Math.round(1 * Math.random() + 0.00021),
+    precession: 0.1e-6
+  },
   halley: {
     ia: 0,
     ifreq: 0,
     ra: 0,
     rfreq: 0,
-    precession: 1.12e-4  //random, but with a certain notion 
+    precession: 1.12e-5  //random, but with a certain notion 
   }
   
 }

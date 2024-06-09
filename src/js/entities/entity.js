@@ -67,18 +67,14 @@ export class Entity {
 
       this.partPosArray = []
 
-      this.argPeriapsis= 0
-      this.longAscNode = 0
-
-
+      this.argPeriapsis= argPeriapsis
+      this.longAscNode = longAscNode
       let objOsc = bodies[this.name.toLowerCase()]
       this.ia = objOsc.ia;
       this.ifreq = objOsc.ifreq;
       this.ra = objOsc.ra;
       this.rfreq = objOsc.rfreq;
       this.precession = objOsc.precession;
-
-
       this.scene = sceneManager.scene
   
       this.textureLoader = new TextureLoader(loading.loadingManager)
@@ -99,7 +95,6 @@ export class Entity {
       });
       } else {
 
-
         if (this.name.toLowerCase() === 'earth') {
          
         this.mat = new MeshPhongMaterial({
@@ -113,8 +108,7 @@ export class Entity {
           shininess: 50,
           alphaTest: 0.5,
           transparent:true
-          
-    
+           
         })
       } else if(this.name.toLowerCase() === 'venus'){
         this.mat = new MeshPhongMaterial({
@@ -151,25 +145,17 @@ export class Entity {
       }
       }
       this.mesh = new Mesh(this.geo, this.mat) 
-
-
-
-   
-
     
       this.mesh.position.x = this.orbitRadius
   
       this.inclinaRad = (this.inclinRot * Math.PI) / 180.0
-  
-      
 
-      this.orbit = this.createOrbitCircle(this.position,this.orbitRadius, this.eccentricity,this.ia,this.ifreq,this.ra,this.rfreq)
+      this.mesh.rotation.x = this.inclinaRad
 
+      this.orbit = this.createOrbitCircle(this.orbitRadius, this.eccentricity,this.ia,this.ifreq,this.ra,this.rfreq)
 
       this.initialPositions()
 
-      
-      
       this.scene.add(this.orbit)
   
       this.div = document.createElement('div')
@@ -181,7 +167,6 @@ export class Entity {
       this.scene.add(this.mesh)   
       this.scene.add(this.label)
 
-   
     }
   
     setLabelVisible(camera, checkedL) {
@@ -215,8 +200,7 @@ export class Entity {
       }
     }
 
-
-    createOrbitCircle(position, R, e, ia, ifreq, ra, rfreq) {
+    createOrbitCircle(R, e, ia, ifreq, ra, rfreq) {
       const segmentCount = 1024;
       const pointsGeo = new BufferGeometry();
       const verts = [];
@@ -232,19 +216,16 @@ export class Entity {
           delta = E - e * Math.sin(E) - M;
           E -= delta / (1 - e * Math.cos(E));
         }
-        const theta = 2 * Math.atan2(Math.sqrt(1 + e) * Math.sin(E / 2), Math.sqrt(1 - e) * Math.cos(E / 2));
-
-
+        const theta = 2 * Math.atan2(Math.sqrt(1 + e) * Math.sin(E / 2), Math.sqrt(1 - e) * Math.cos(E / 2)) ;
 
         const H_osc = this.orbitInclin + ia * Math.sin(ifreq * (theta));
         const r_base = (R * (1 - e * e)) / (1 + e * Math.cos(theta));
         const r_osc = r_base + ra * Math.sin(rfreq * (theta));
-        
+      
+        const x = r_osc * Math.sin(theta + this.argPeriapsis) + this.position.x ;
+        const y = r_osc * Math.cos(theta) * Math.sin(H_osc) + this.position.y;
+        const z = r_osc * Math.cos(theta+ this.argPeriapsis) * Math.cos(H_osc) + this.position.z;
 
-        const x = r_osc * Math.sin(theta) + position.x;
-        const y = r_osc * Math.cos(theta) * Math.sin(-H_osc) + position.y;
-        const z = r_osc * Math.cos(theta) * Math.cos(-H_osc) + position.z;
-    
         verts.push(x, y, z);
       }
     
@@ -270,18 +251,16 @@ export class Entity {
     animate(M) {
       let partPos = this.orbit.geometry.attributes.position.array;
       let precessionAngle = M*this.precession;
-
+      let angleSum = precessionAngle + this.longAscNode 
       for (let i = 0; i < this.partPosArray.length; i ++) {
-        let rotated = rotateAroundAxisY(this.partPosArray[i].x, this.partPosArray[i].y, this.partPosArray[i].z, precessionAngle);
-        partPos[i*3] = rotated.newX
-        partPos[i*3 + 1] = rotated.newY
+        let rotated = rotateAroundAxisY(this.partPosArray[i].x, this.partPosArray[i].y, this.partPosArray[i].z, angleSum);
+        partPos[i*3] = rotated.newX 
+        partPos[i*3 + 1] = rotated.newY 
         partPos[i*3 + 2] = rotated.newZ
       }
     
-      this.orbit.geometry.attributes.position.needsUpdate = true;
-    
+      this.orbit.geometry.attributes.position.needsUpdate = true; 
   }
-
 }
   export function corAleatoria() {
     const min = 0.5;

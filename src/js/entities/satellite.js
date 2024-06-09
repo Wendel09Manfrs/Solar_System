@@ -19,7 +19,8 @@ export class Satellite extends Entity {
       planet
     ) {
       let position = new Vector3()
-      super(position, size, texture, orbitRadius, inclinRot, orbitInclin, speedTrans, speedRot, eccentricity,argPeriapsis,longAscNode, label);
+      let orbitInclinSum = orbitInclin - planet.inclinaRad
+      super(position, size, texture, orbitRadius, inclinRot, orbitInclinSum, speedTrans, speedRot, eccentricity,argPeriapsis,longAscNode, label);
       this.planet = planet
     }
     centerOrbit(){
