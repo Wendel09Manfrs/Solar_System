@@ -22,6 +22,8 @@ export class Tail {
     this.dust = this.createPoints(this.parametersDust)
 
     this.gas = this.createPoints(this.parametersGas)
+
+    this.conditionMet = false;
     
   }
 
@@ -151,7 +153,8 @@ export class Tail {
 
   tail.material.uniforms.globalOpacity.value = 
     Math.max(0,Math.min(1.2e-2, opacity))
- 
+
+
   }
 
 
@@ -225,18 +228,39 @@ export class Tail {
 
 
   animate(posSun){
-    const distSun = this.mesh.position.distanceTo(posSun)
+    let distSun = this.mesh.position.distanceTo(posSun)
 
-    const opacity = MathUtils.mapLinear(distSun, 0, 175.1, 1.2e-2, 0);
+    const opacity = MathUtils.mapLinear(distSun, 0, 176, 1.2e-2, 0);
   
     this.posTailsGas(this.gas, opacity*0.9)
     this.posTailsDust(this.dust, posSun, opacity)
 
     this.gas.lookAt(posSun)
     this.dust.lookAt(posSun)
+
+
+    this.checkDistanceAndUpdate(distSun)
   }
 
-  
-
+  checkDistanceAndUpdate(distSun) {
+    if (distSun >= 176) {
+        if (!this.conditionMet) {
+            remove(this.gas, this.scene);
+            remove(this.dust, this.scene);
+            this.conditionMet = true; 
+        }
+    } else {
+        if (this.conditionMet) {
+            this.dust = this.createPoints(this.parametersDust);
+            this.gas = this.createPoints(this.parametersGas);
+            this.conditionMet = false; 
+        }
+    }
+}
 }
 
+function remove (points, scene){
+  scene.remove(points)
+  points.geometry.dispose();
+  points.material.dispose();
+}
