@@ -86,8 +86,8 @@ export class GuiInterface {
       },
       kuiper: {
         Real: 1,
-        Medium: 50000,
-        Large: 200000,
+        Medium: 200000,
+        Large: 800000,
       },
       oort: {
         Real: 1,

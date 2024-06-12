@@ -18,11 +18,16 @@ export class Belt {
     this.qtd = qtd
     this.meteourTexture = meteourTexture
     this.blending = blending
+
+    this.maxSpeed = 5e-3
+    this.minSpeed = 1e-3
+    this.inclSpeed = 2e-7
+    this.speeds = []
     this.parameters = this.generateAttr(this.qtd)
     this.pos = new Vector3(0,0,0)
-    this.maxSpeed = 8.8e-4
-    this.minSpeed = 1.5e-4
-    this.inclSpeed = 2e-7
+
+
+    
     this.R = R
 
     this.element = new Object(
@@ -37,38 +42,46 @@ export class Belt {
   }
 
   generateAttr(numPoints) {
-    let coord = []
-    let colors = []
-    let sizes = []
-
+    let coord = [];
+    let colors = [];
+    let sizes = [];
     let shift = [];
+    let randValue = []
+    
 
     for (let i = 0; i < numPoints; i++) {
-      const targetR = Math.random() * r
-      const targetC = Math.random() * r + R
+        const targetRMean = 0.5;
+        const targetRStdDev = r /1.25;  
+        const targetR = Math.abs(randomNormal(targetRMean, targetRStdDev));
 
-      const thetaMean = 0
-      const thetaStdDev = Math.PI * thetaSet
-      const theta = randomNormal(thetaMean, thetaStdDev) * circle
+        const targetC = Math.random() * r + R;
 
-      const phiMean = Math.PI
-      const phiStdDev = Math.PI * phiSet
-      const phi = randomNormal(phiMean, phiStdDev) * circle
+        const thetaMean = 0;
+        const thetaStdDev = Math.PI * thetaSet;
+        const theta = randomNormal(thetaMean, thetaStdDev) * circle;
 
-      const x = (targetC + targetR * Math.cos(theta)) * Math.cos(phi)
-      const z = (targetC + targetR * Math.cos(theta)) * Math.sin(phi)
-      const y = targetR * Math.sin(theta)
+        const phiMean = Math.PI;
+        const phiStdDev = Math.PI * phiSet;
+        const phi = randomNormal(phiMean, phiStdDev) * circle;
 
-      let aleat = colorSizeAleat(attributs)
-      colors.push(aleat.color)
-      sizes.push(aleat.size)
+        const x = (targetC + targetR * Math.cos(theta)) * Math.cos(phi);
+        const z = (targetC + targetR * Math.cos(theta)) * Math.sin(phi);
+        const y = targetR * Math.sin(theta);
 
-      pushShift(shift, 2.5);
+        let aleat = colorSizeAleat(attributs);
+        colors.push(aleat.color);
+        sizes.push(aleat.size);
+        randValue.push(Math.random() * 10.0*i)
 
-      coord.push(new Vector3(x, y, z))
+        const randomSpeed = Math.random() * (this.maxSpeed - this.minSpeed) + this.minSpeed
+        this.speeds.push(randomSpeed)
+
+        pushShift(shift, 2.5);
+
+        coord.push(new Vector3(x, y, z));
     }
 
-    return { coord, colors, sizes,shift }
+    return { coord, colors, sizes,shift, randValue}
   }
   labelPosition() {
     const position = new Vector3(R, r, 0)
@@ -89,3 +102,5 @@ export function randomNormal(mean, stddev) {
   let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v)
   return num * stddev + mean
 }
+
+

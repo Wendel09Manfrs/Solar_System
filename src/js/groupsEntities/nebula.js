@@ -25,10 +25,16 @@ export class Nebula {
     this.distCam = this.distancia
     this.qtd = qtd
     this.blending = blending
+
+    this.maxSpeed = -8.7e-9
+    this.minSpeed = -4.3e-9
+
+    this.speeds = []
     this.parameters = this.generateAttr(this.qtd)
     this.pos = new Vector3(0, 0, 0)
-    this.maxSpeed = -7.7e-9
-    this.minSpeed = -3.3e-9
+ 
+
+   
 
     this.element = new Object(
       this.name,
@@ -43,8 +49,10 @@ export class Nebula {
     let coord = []
     let colors = []
     let sizes = []
+    let randValue = []
+    
 
-    for (let i = 0; i < numStars / 20; i++) {
+    for (let i = 0; i < numStars / 15; i++) {
       const x = gaussianRandom(0, CORE_X_DIST * 1.2)
       const y = gaussianRandom(0, CORE_Y_DIST * 1.2)
       const z = gaussianRandom(0, GALAXY_THICKNESS*1.4)
@@ -55,9 +63,15 @@ export class Nebula {
       colors.push(new Color(0xfffab8))
       sizes.push(aleat.size * 1.2)
       coord.push(xyz)
+      randValue.push(Math.random() * 100.0*i)
+      
+      const randomSpeed = Math.random() * (this.maxSpeed - this.minSpeed) + this.minSpeed
+      this.speeds.push(randomSpeed)
+
+
     }
 
-    for (let i = 0; i < numStars / 20; i++) {
+    for (let i = 0; i < numStars / 15; i++) {
       const x1 = gaussianRandom(0, OUTER_CORE_X_DIST * 1.5)
       const y1 = gaussianRandom(0, OUTER_CORE_Y_DIST * 1.5)
       const z1 = gaussianRandom(0, GALAXY_THICKNESS*1.4)
@@ -69,6 +83,10 @@ export class Nebula {
 
       sizes.push(aleat.size * 1.2)
       coord.push(xyz)
+      randValue.push(Math.random() * 100.0*i)
+
+      const randomSpeed = Math.random() * (this.maxSpeed - this.minSpeed) + this.minSpeed
+      this.speeds.push(randomSpeed)
     }
 
     for (let j = 0; j < ARMS; j++) {
@@ -83,10 +101,14 @@ export class Nebula {
         colors.push(aleat.color)
         sizes.push(aleat.size * 1.2)
         coord.push(xyz)
+        randValue.push(Math.random() * 100.0*i)
+
+        const randomSpeed = Math.random() * (this.maxSpeed - this.minSpeed) + this.minSpeed
+        this.speeds.push(randomSpeed)
       }
     }
 
-    return { coord, colors, sizes }
+    return { coord, colors, sizes ,randValue}
   }
   labelPosition() {
     const position = new Vector3(

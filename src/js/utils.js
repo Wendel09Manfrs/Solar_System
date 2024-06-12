@@ -89,14 +89,13 @@ export function orbit(
 
 
 
-export function animateParts(center, part, time, velmax, velmin) {
+export function animateParts(center, part, time, speeds) {
   let centerX = center.x
   let centerZ = center.z
 
   let partPos = part.element.objects.geometry.attributes.position.array
 
   for (let i = 0; i < partPos.length; i += 3) {
-    const varSpeed = Math.random() * (velmax - velmin) + velmin
     let radius = Math.sqrt(
       (partPos[i] - centerX) ** 2 + (partPos[i + 2] - centerZ) ** 2,
     )
@@ -105,7 +104,7 @@ export function animateParts(center, part, time, velmax, velmin) {
       partPos[i] - centerX,
     )
 
-    const speed = (-time * varSpeed) / Math.sqrt(radius, 2)
+    const speed = (-time * speeds[i/3] ) / Math.sqrt(radius, 2)
     const theta = orbitalAngle + speed
 
     partPos[i] = centerX + radius * Math.cos(theta)

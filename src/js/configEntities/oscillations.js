@@ -105,16 +105,16 @@ export const bodies = {
     precession: 3.15e-6
   },
   dione: {
-    ia: 0.0001,
-    ifreq: 0.00001,
-    ra: 0.00002 * Math.random() + 0.0001,
+    ia: 0.00001,
+    ifreq: 0.000001,
+    ra: 0.000002 * Math.random() + 0.0001,
     rfreq: Math.round(3 * Math.random() + 1),
     precession: 6.6e-8
   },
   iapetus: {
-    ia: 0.0001,
+    ia: 0.000001,
     ifreq: 0.0007,
-    ra: 0.0002 * Math.random() + 0.001,
+    ra: 0.000002 * Math.random() + 0.001,
     rfreq: Math.round(3 * Math.random() + 1),
     precession: 5.858e-6
   },
@@ -123,35 +123,35 @@ export const bodies = {
     ifreq: 0.0015,
     ra: 0.0002 * Math.random() + 0.001,
     rfreq: Math.round(3 * Math.random() + 1),
-    precession: 2.8457e-5
+    precession: 2.8457e-7
   },
   rhea: {
     ia: 0.0001,
     ifreq: 0.0008,
     ra: 0.0002 * Math.random() + 0.001,
     rfreq: Math.round(3 * Math.random() + 1),
-    precession: 2.15e-6
+    precession: 2.15e-8
   },
   thetys: {
     ia: 0.00002,
     ifreq: 0.0002,
     ra: 0.0001 * Math.random(),
     rfreq: Math.round(1 * Math.random() + 0.002),
-    precession: 1.13e-6
+    precession: 1.13e-8
   },
   triton: {
     ia: 0.00001,
     ifreq: 0.00012,
     ra: 0.00002 * Math.random(),
     rfreq: Math.round(1 * Math.random() + 0.0001),
-    precession: 0.6e-6
+    precession: 0.6e-8
   },
   charon: {
     ia: 0.00000032,
     ifreq: 0.000007,
     ra: 0.00001 * Math.random(),
     rfreq: Math.round(1 * Math.random() + 0.0002),
-    precession: 0.1e-6
+    precession: 0.1e-8
   },
 
   titania:{
@@ -159,28 +159,28 @@ export const bodies = {
     ifreq: 0.000001,
     ra: 0.00002 * Math.random(),
     rfreq: 0.0000001,
-    precession: 0.1e-6
+    precession: 0.1e-8
   },
   oberon:{
     ia: 0.000002,
     ifreq: 0.00001,
     ra: 0.00001 * Math.random(),
     rfreq: Math.round(1 * Math.random() + 0.00000221),
-    precession: 0.1e-6
+    precession: 0.1e-8
   },
   umbriel:{
     ia: 0.0000006,
     ifreq: 0.00004,
     ra: 0.00001 * Math.random(),
     rfreq: Math.round(1 * Math.random() + 0.000341),
-    precession: 0.1e-6
+    precession: 0.1e-8
   },
   ariel:{
     ia: 0.000001,
     ifreq: 0.00004,
     ra: 0.00001 * Math.random(),
     rfreq: Math.round(1 * Math.random() + 0.00021),
-    precession: 0.1e-6
+    precession: 0.1e-8
   },
   halley: {
     ia: 0,

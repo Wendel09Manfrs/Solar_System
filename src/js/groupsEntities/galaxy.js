@@ -27,9 +27,11 @@ export class Galaxy {
     this.starTexture = starTexture
     this.blending = blending
     this.pos = new Vector3(0,0,0)
-    this.maxSpeed = -4e-8
-    this.minSpeed = -1e-8
+    this.maxSpeed = -6e-8
+    this.minSpeed = -3e-8
     this.inclSpeed = 1e-13
+
+    this.speeds = []
 
     this.parameters = this.generateAttr(this.qtd)
 
@@ -49,7 +51,8 @@ export class Galaxy {
     let coord = []
     let colors = []
     let sizes = []
-
+    let randValue = []
+    
     let shift = []
  
 
@@ -65,6 +68,10 @@ export class Galaxy {
       sizes.push(aleat.size)
       coord.push(xyz)
       pushShift(shift, 160000000)
+      randValue.push(0)
+      
+      const randomSpeed = Math.random() * (this.maxSpeed - this.minSpeed) + this.minSpeed
+      this.speeds.push(randomSpeed)
     }
 
     for (let i = 0; i < numStars / 6; i++) {
@@ -79,6 +86,10 @@ export class Galaxy {
       sizes.push(aleat.size * 1.3)
       coord.push(xyz)
       pushShift(shift, 100000000)
+      randValue.push(0)
+      
+      const randomSpeed = Math.random() * (this.maxSpeed - this.minSpeed) + this.minSpeed
+      this.speeds.push(randomSpeed)
     }
 
     for (let j = 0; j < ARMS; j++) {
@@ -94,6 +105,10 @@ export class Galaxy {
         sizes.push(aleat.size)
         coord.push(xyz)
         pushShift(shift, 100000000)
+        randValue.push(0)
+        
+        let randomSpeed = Math.random() * (this.maxSpeed - this.minSpeed) + this.minSpeed
+        this.speeds.push(randomSpeed)
 
       }
     }
@@ -102,6 +117,7 @@ export class Galaxy {
       colors,
       sizes,
       shift,
+      randValue,
     }
   }
   labelPosition() {

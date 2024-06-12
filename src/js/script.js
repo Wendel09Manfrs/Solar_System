@@ -507,9 +507,8 @@ const charon = new Satellite(
 )
 
 
-
 let galaxy = new Galaxy(
-  'Milk Way Galaxy',
+  'Milk Way',
   15000,
   starsTexture,
   AdditiveBlending,
@@ -517,27 +516,29 @@ let galaxy = new Galaxy(
 let galaxyCenter = new Vector3(0, 0, 0);
 let galaxyNormal = new Vector3(0, Math.cos(-1.05068821), Math.sin(-1.05068821)).normalize();
 
-let nebula = new Nebula(null, 2000, AdditiveBlending)
+let nebula = new Nebula(null, 1100, AdditiveBlending)
 
-let belt = new Belt('Asteroid Belt', 2000, meteourTexture, AlwaysDepth)
+
+
+let belt = new Belt('Asteroid Belt', 8000, meteourTexture, AlwaysDepth)
 
 let kuiper = new Kuiper(
   -0.35,
   'Kuiper Belt',
-  4000,
+  8000,
   meteourTexture,
   AlwaysDepth,
 )
 
 let kuiper2 = new Kuiper(
-  0.75,
+  0.7,
   'Kuiper Belt',
-  4000,
+  8000,
   meteourTexture,
   AlwaysDepth,
 )
 
-let oort = new CloudOort('Oort Cloud', 15000, meteourTexture,AlwaysDepth)
+let oort = new CloudOort('Oort Cloud', 10000, meteourTexture,AlwaysDepth)
 
 const halley = new Comet(
   5e-5,
@@ -587,11 +588,11 @@ const bodies = {
 }
 
 export const particles = {
-  belt: belt,
-  kuiper: kuiper,
-  kuiper2: kuiper2,
-  oort: oort,
-  galaxy: galaxy,
+ belt: belt,
+ kuiper: kuiper,
+ kuiper2: kuiper2,
+ oort: oort,
+ galaxy: galaxy,
 }
 
 
@@ -692,7 +693,7 @@ function updateNonOrbitingBody(body, speed, controls, camera) {
 
 function updateParticles(particles, speed, posSun, camera, controls, distSun) {
   Object.keys(particles).forEach(group => {
-    const particleGroup = particles[group];
+    let particleGroup = particles[group];
     particleGroup.element.setLabelVisible(posSun, camera, controls.labVisible);
 
     particleGroup.centerOrbit()
@@ -700,8 +701,7 @@ function updateParticles(particles, speed, posSun, camera, controls, distSun) {
       particleGroup.pos,
       particleGroup,
       speed,
-      particleGroup.maxSpeed,
-      particleGroup.minSpeed
+      particleGroup.speeds
     );
     particleGroup.element.pointMaterial.uniforms.time.value += speed * Math.PI * particleGroup.inclSpeed;
     if (!particleGroup.starTexture) {
@@ -750,7 +750,9 @@ function animate() {
 
   updateParticles(particles, speed, posSun, camera, controls,distSun );
 
-  animateParts(nebula.pos, nebula, speed, nebula.maxSpeed, nebula.minSpeed);
+  animateParts(nebula.pos, nebula, speed, nebula.speeds);
+
+  
 
   camera.updateWorldMatrix();
   updateCameraAndDistortion(controls, camera, posHoleBlack, posHoleWhite);

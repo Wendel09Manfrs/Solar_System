@@ -19,11 +19,15 @@ export class CloudOort {
     this.qtd = qtd
     this.meteourTexture = meteourTexture
     this.blending = blending
+
+    this.maxSpeed = 4.5e-6
+    this.minSpeed = 2.2e-6
+    this.inclSpeed = 8e-11
+    this.speeds = []
     this.parameters = this.generateAttr(this.qtd)
     this.pos = new Vector3(0,0,0)
-    this.maxSpeed = 1.5e-6
-    this.minSpeed = 9e-7
-    this.inclSpeed = 8e-11
+ 
+    
 
     this.element = new Object(
       this.name,
@@ -39,6 +43,7 @@ export class CloudOort {
     let coord = []
     let colors = []
     let sizes = []
+    let randValue = []
 
 
     let shift = [];
@@ -62,6 +67,10 @@ export class CloudOort {
         colors.push(aleat.color)
         sizes.push(aleat.size)
 
+        const randomSpeed = Math.random() * (this.maxSpeed - this.minSpeed) + this.minSpeed
+
+        this.speeds.push(randomSpeed)
+
       if (
         (!inEllipsoid(x, y, z, phi, this.R) ||
           !isInCenter(x, y, z, phi, this.R)) &&
@@ -71,10 +80,14 @@ export class CloudOort {
         coord.push(new Vector3(x, y, z))
         coord.push(new Vector3(x, y2, z))
         pushShift(shift, 100000);
+        randValue.push(Math.random() * 10.0*i)
+        
+        
+        
   
       }     
     }
-    return { coord, colors, sizes,shift }
+    return { coord, colors, sizes,shift, randValue}
   }
 
   labelPosition() {

@@ -23,11 +23,13 @@ export class Kuiper {
     this.qtd = qtd
     this.meteourTexture = meteourTexture
     this.blending = blending
+    this.maxSpeed = 3e-4
+    this.minSpeed = 9.6e-5
+    this.inclSpeed = 1e-7
+    this.speeds = []
     this.parameters = this.generateAttr(this.qtd)
     this.pos = new Vector3(0,0,0)
-    this.maxSpeed = 9.7e-5
-    this.minSpeed = 5.6e-5
-    this.inclSpeed = 1e-7
+
     this.R = R
 
     this.element = new Object(
@@ -44,13 +46,15 @@ export class Kuiper {
     let coord = []
     let colors = []
     let sizes = []
-
-
+    
+    let randValue = []
     let shift = [];
 
 
     for (let i = 0; i < numPoints; i++) {
-      const targetR = Math.random() * r
+      const targetRMean = 0.5;
+      const targetRStdDev = r /2;  
+      const targetR = Math.abs(randomNormal(targetRMean, targetRStdDev));
       const targetC = Math.random() * r + R
 
       const thetaMean = 0
@@ -68,12 +72,16 @@ export class Kuiper {
       let aleat = colorSizeAleat(attributs)
       colors.push(aleat.color)
       sizes.push(aleat.size)
+      randValue.push(Math.random() * 10.0*i)
+      
+      const randomSpeed = Math.random() * (this.maxSpeed - this.minSpeed) + this.minSpeed
+      this.speeds.push(randomSpeed)
 
       pushShift(shift, 100);
       coord.push(new Vector3(x, y, z))
     }
 
-    return { coord, colors, sizes, shift}
+    return { coord, colors, sizes, shift,randValue}
   }
   labelPosition() {
     const position = new Vector3(R, r, 0)

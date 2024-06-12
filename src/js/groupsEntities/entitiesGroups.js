@@ -10,6 +10,10 @@ import fragmentNebula from '../../../shaders/nebula/fragment.glsl'
 import vertexAsteroids from '../../../shaders/asteroids/vertex.glsl'
 import fragmentAsteroids from '../../../shaders/asteroids/fragment.glsl'
 
+
+import vertexStars from '../../../shaders/stars/vertex.glsl'
+import fragmentStars from '../../../shaders/stars/fragment.glsl'
+
 import { scene } from '../script.js'
 
 
@@ -52,6 +56,11 @@ export class Object {
       ),
     )
 
+    this.objectGeometry.setAttribute(
+      'randomValue',
+      new Float32BufferAttribute(this.attributes.randValue, 1),
+    )
+
     this.particleTexture = new TextureLoader(loading.loadingManager).load(
       this.texture,
     )
@@ -70,6 +79,25 @@ export class Object {
 
       })
     } else {
+
+      if (this.name.toLowerCase() === 'milk way'){
+
+
+      this.pointMaterial = new ShaderMaterial({
+        uniforms: {
+          particleTexture: { value: this.particleTexture },
+          opacity: { value: 1.0 },
+          time: { value: 0 },
+        },
+        vertexShader: vertexStars,
+        fragmentShader: fragmentStars,
+
+        transparent: true,
+        blending: this.blending,
+        depthWrite: false,
+      })
+
+    } else{
       this.pointMaterial = new ShaderMaterial({
         uniforms: {
           particleTexture: { value: this.particleTexture },
@@ -83,6 +111,11 @@ export class Object {
         blending: this.blending,
         depthWrite: false,
       })
+    }
+
+
+
+
     }
 
     this.objects = new Points(this.objectGeometry, this.pointMaterial)
